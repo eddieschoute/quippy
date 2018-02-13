@@ -1,13 +1,13 @@
-import tatsu
+import tatsu.grammars
 
 GRAMMAR = '''
 @@grammar :: quipper
 @@whitespace :: /[^\S\n]*/
 
-start = iostatement {statement} iostatement $ ;
+start :: Program = input:iostatement newline statements:{statement newline} ouput:iostatement $ ;
 
-iostatement = ("Inputs"|"Outputs")":" ioqubit {"," ioqubit} ;
-ioqubit = int ":" "Qbit" ;
+iostatement :: IOStatement = ("Inputs"|"Outputs")":" qubits:",".{ioqubit}+ ;
+ioqubit = qubit:int ":" "Qbit" ;
 
 statement
     =
@@ -16,17 +16,14 @@ statement
     | comment
     ;
 
-qgate = "QGate[" string "]" ["*"] "(" int ") with" control_app ;
-qrot = "QRot[" string "," double "](" int ")" ;
+qgate :: QGate = "QGate[" ~ name:string "]" inverse:["*"] "(" qubit:int ") with" control:(controlled | no_control) ;
+qrot :: QRot = "QRot[" ~ string "," double "](" int ")" ;
 
-comment = "Comment[" string "](" wire {"," wire}* ")" ;
+comment :: Comment = "Comment[" ~ string "](" ",".{wire}+ ")" ;
 wire = int ":" string ;
 
-control_app
-    =
-    | "nocontrol"
-    | "controls=[" control "] with nocontrol"
-    ;
+controlled :: Controlled = "controls=[" control:control "] with nocontrol" ;
+no_control :: NoControl = "nocontrol" ;
 
 control
     =
@@ -37,7 +34,8 @@ control
 string = /"\S+"/ ;
 int = /\d+/ ;
 double = /(-)?\d+\.\d+e(-)?\d\d/ ;
+newline = /\n/ ;
 
 '''
 
-quipper_model = tatsu.compile(GRAMMAR)
+quipper_model: tatsu.grammars.Grammar = tatsu.compile(GRAMMAR)
