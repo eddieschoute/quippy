@@ -28,7 +28,7 @@ control::Control
     | direction:"+" qubit:int
     ;
 
-string = /"[^"]+"/ ;
-int = /\d+/ ;
-double = /(-)?\d+\.\d+e(-)?\d\d/ ;
+string::str = /"[^"]+"/ ;
+int::int = /\d+/ ;
+double::float = /(-)?\d+\.\d+e(-)?\d\d/ ;
 newline = /\n/ ;
