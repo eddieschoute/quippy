@@ -1,7 +1,7 @@
 @@grammar :: quipper
 @@whitespace :: /[^\S\n]*/
 
-start :: Program = input:iostatement newline statements:{statement newline} ouput:iostatement $ ;
+start :: Program = input:iostatement newline statements:{statement newline} ouput:iostatement [newline] $ ;
 
 iostatement::IOStatement = ("Inputs"|"Outputs")":" qubits:",".{ioqubit}+ ;
 ioqubit = qubit:int ":" "Qbit" ;
