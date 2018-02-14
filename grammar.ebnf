@@ -1,4 +1,4 @@
-@@grammar :: quipper
+@@grammar :: Quipper
 @@whitespace :: /[^\S\n]*/
 
 start :: Program = input:iostatement newline statements:{statement newline} ouput:iostatement [newline] $ ;
