@@ -1,7 +1,7 @@
 @@grammar :: Quipper
 @@whitespace :: /[^\S\n]*/
 
-start :: Program = input:iostatement newline statements:{statement newline} ouput:iostatement [newline] $ ;
+start::Program = input:iostatement newline statements:{statement newline} output:iostatement [newline] $ ;
 
 iostatement::IOStatement = ("Inputs"|"Outputs")":" qubits:",".{ioqubit}+ ;
 ioqubit = qubit:int ":" "Qbit" ;
@@ -13,11 +13,11 @@ statement
     | comment
     ;
 
-qgate::QGate = "QGate[" ~ name:string "]" inverse:["*"] "(" qubit:int ") with" control:(controlled | no_control) ;
+qgate::QGate = "QGate[" ~ name:string "]" inverse:["*"] "(" qubit:int ") with" controlled:(controlled | no_control) ;
 qrot::QRot = "QRot[" ~ string "," double "](" int ")" ;
 
 comment::Comment = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;
-wire = qubit:int ":" text:string ;
+wire::Wire = qubit:int ":" text:string ;
 
 controlled::Controlled = "controls=[" control:control "] with nocontrol" ;
 no_control::NoControl = "nocontrol" ;
