@@ -20,17 +20,18 @@ class TestModel(TestCase):
 
     def test_start(self):
         basic_text = """Inputs: 0:Qbit, 1:Qbit
-        Outputs: 0:Qbit, 1:Qbit"""
-        parsed: _model.Program = self.parser.parse(basic_text, rule_name="start")
+        Outputs: 0:Qbit, 1:Qbit
+        """
+        parsed: _model.Circuit = self.parser.parse(basic_text, rule_name="circuit")
         self.assertEqual(2, len(parsed.input.qubits))
-        self.assertEqual(0, len(parsed.statements))
+        self.assertEqual(0, len(parsed.gatelist))
         self.assertEqual(2, len(parsed.output.qubits))
         self.assertEqual(0, parsed.input.qubits[0])
         self.assertEqual(1, parsed.input.qubits[1])
 
-    def test_statement_qgate(self):
+    def test_gatelist_qgate(self):
         basic_text = '''QGate["not"](0) with controls=[+2] with nocontrol'''
-        parsed: _model.QGate = self.parser.parse(basic_text, rule_name="statement")
+        parsed: _model.QGate = self.parser.parse(basic_text, rule_name="gatelist")
         self.assertEqual('not', parsed.name)
         self.assertEqual(None, parsed.inverse)
         self.assertEqual(2, parsed.controlled.control.qubit)

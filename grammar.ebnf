@@ -1,26 +1,61 @@
 @@grammar :: Quipper
 @@whitespace :: /[^\S\n]*/
 
-start::Program = input:iostatement newline statements:{statement newline} output:iostatement [newline] $ ;
+start::BCircuit = circuit:circuit subroutines:{subroutine newline} newline $ ;
+circuit::Circuit =
+    "Inputs: "inputs:arity newline
+    gatelist:{gate newline}
+    "Outputs: "outputs:arity
+    ;
+subroutine::Subroutine =
+    newline
+    "Subroutine: "name:string newline
+    "Shape: "shape:string newline
+    "Controllable: "controllable:("yes"|"no"|"classically") newline
+    circuit:circuit ;
 
-iostatement::IOStatement = ("Inputs"|"Outputs")":" qubits:",".{ioqubit}+ ;
-ioqubit = @:int ":" "Qbit" ;
+arity::Arity = @:",".{type_assignment}+ ;
+type_assignment::TypeAssignment = number:int ":" type:("Qbit"|"Cbit") ;
 
-statement
+control_app = controlled:(controlled | no_control) ;
+controlled::Controlled = "with controls=[" ~ control:control "] with nocontrol" ;
+no_control::NoControl = "with nocontrol" ;
+
+
+gate
     =
     | qgate
     | qrot
+    | gphase
+    | cnot
+    | cgate
+    | cswap
+    | qprep
+    | qunprep
+    | qinit
+    # | cinit
+    # | cterm
+    # | qmeas
+    # | qdiscard
+    # | cdiscard
+    # | dterm
+    # | subroutine_call
     | comment
     ;
 
-qgate::QGate = "QGate[" ~ name:string "]" inverse:["*"] "(" qubit:int ") with" controlled:(controlled | no_control) ;
-qrot::QRot = "QRot[" ~ string "," double "](" int ")" ;
+qgate::QGate::Gate = "QGate[" ~ name:string "]" inverse:["*"] "(" qubit:int ")" > control_app;
+qrot::QRot::Gate = "QRot[" ~ string "," double "](" int ")" ;
+gphase::GPhase = "Gphase() with t=" ~ timestep:double >control_app "with anchors=[" ~ wires:",".{wire} "]" ;
+cnot::CNot = "CNot(" ~ wire:wire ")" >control_app ;
+cgate::CGate = "CGate[" ~ name:string "]" inverse:["*"] "(" wires:",".{wire} ")" no_control;
+cswap::CSwap = "CSwap(" ~ wire1:wire "," wire2:wire ")" >control_app ;
+qprep::QPrep = "QPrep(" ~ wire:wire ")" no_control ;
+qunprep::QUnprep = "QUnprep(" ~ wire:wire ")" no_control ;
+qinit::QInit = "QInit" ~ value:( &"1" `true` | &"0" `false`) "(" wire:wire ")" no_control;
+
 
 comment::Comment = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;
 wire::Wire = qubit:int ":" text:string ;
-
-controlled::Controlled = "controls=[" ~ control:control "] with nocontrol" ;
-no_control::NoControl = "nocontrol" ;
 
 control::Control
     =

@@ -11,24 +11,27 @@ class TestParser(TestCase):
         self.parser = _parser.QuipperParser()
 
     def test_iostatement(self):
-        basic_text = """Inputs: 0:Qbit"""
-        parsed = self.parser.parse(basic_text, rule_name="iostatement")
-        self.assertEqual(1, len(parsed['qubits']))
-        self.assertEqual('0', parsed['qubits'][0])
+        basic_text = """0:Qbit"""
+        parsed = self.parser.parse(basic_text, rule_name="arity")
+        self.assertEqual(1, len(parsed))
+        self.assertEqual(0, parsed[0]['number'])
 
     def test_start(self):
-        basic_text = """Inputs: 0:Qbit, 1:Qbit
-        Outputs: 0:Qbit, 1:Qbit"""
-        parsed = self.parser.parse(basic_text, rule_name="start")
-        self.assertEqual(2, len(parsed['input']['qubits']))
-        self.assertEqual(0, len(parsed['statements']))
-        self.assertEqual(2, len(parsed['output']['qubits']))
-        self.assertEqual('0', parsed['input']['qubits'][0])
-        self.assertEqual('1', parsed['input']['qubits'][1])
+        basic_text = """Inputs: 0:Qbit, 1:Cbit
+        Outputs: 0:Qbit, 1:Cbit
+        """
+        parsed = self.parser.parse(basic_text, rule_name="circuit")
+        self.assertEqual(2, len(parsed['inputs']))
+        self.assertEqual(0, len(parsed['gatelist']))
+        self.assertEqual(2, len(parsed['outputs']))
+        self.assertEqual(0, parsed['inputs'][0]['number'])
+        self.assertEqual('Qbit', parsed['inputs'][0]['type'])
+        self.assertEqual(1, parsed['output'][1]['number'])
+        self.assertEqual('Cbit', parsed['output'][1]['type'])
 
-    def test_statement_qgate(self):
+    def test_gatelist_qgate(self):
         basic_text = '''QGate["not"](0) with controls=[+2] with nocontrol'''
-        parsed = self.parser.parse(basic_text, rule_name="statement")
+        parsed = self.parser.parse(basic_text, rule_name="gate")
         self.assertEqual('not', parsed['name'])
         self.assertEqual(None, parsed['inverse'])
         self.assertEqual('2', parsed['controlled']['control']['qubit'])
