@@ -4,7 +4,7 @@
 start::Program = input:iostatement newline statements:{statement newline} output:iostatement [newline] $ ;
 
 iostatement::IOStatement = ("Inputs"|"Outputs")":" qubits:",".{ioqubit}+ ;
-ioqubit = qubit:int ":" "Qbit" ;
+ioqubit = @:int ":" "Qbit" ;
 
 statement
     =
@@ -19,7 +19,7 @@ qrot::QRot = "QRot[" ~ string "," double "](" int ")" ;
 comment::Comment = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;
 wire::Wire = qubit:int ":" text:string ;
 
-controlled::Controlled = "controls=[" control:control "] with nocontrol" ;
+controlled::Controlled = "controls=[" ~ control:control "] with nocontrol" ;
 no_control::NoControl = "nocontrol" ;
 
 control::Control
@@ -28,7 +28,8 @@ control::Control
     | direction:"+" qubit:int
     ;
 
-string::str = /"[^"]+"/ ;
+string = '"'@:String_literal'"';
+String_literal::str = /[^"]+/ ;
 int::int = /\d+/ ;
 double::float = /(-)?\d+\.\d+e(-)?\d\d/ ;
 newline = /\n/ ;
