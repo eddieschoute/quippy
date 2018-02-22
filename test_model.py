@@ -1,10 +1,11 @@
+import glob
 from pathlib import Path
 from unittest import TestCase
 
+from tatsu.exceptions import FailedParse
+
 import _model
 import _parser
-
-ADDER_FILE = Path("resources") / "optimizer" / "Arithmetic_and_Toffoli" / "adder_8_before"
 
 
 class TestModel(TestCase):
@@ -47,3 +48,18 @@ class TestModel(TestCase):
         self.assertEqual(2, len(parsed.wires))
         self.assertEqual(0, parsed.wires[0].qubit)
         self.assertEqual('qs[1]', parsed.wires[1].text)
+
+    def test_real(self):
+        """Try to parse all files in the optimizer resource folder."""
+        optimizer_files_path = Path("resources") / "optimizer" / "**"
+        optimizer_files = glob.glob(str(optimizer_files_path), recursive=True)
+        quipper_paths = filter(lambda path: not path.is_dir()
+                                            and path.suffix == '',
+                               map(lambda s: Path(s), optimizer_files))
+        for path in quipper_paths:
+            print(path)
+            with open(path) as quipper_file:
+                try:
+                    self.parser.parse(quipper_file.read())
+                except FailedParse as e:
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
