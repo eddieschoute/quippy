@@ -33,13 +33,13 @@ gate
     | qprep
     | qunprep
     | qinit
-    # | cinit
-    # | cterm
-    # | qmeas
-    # | qdiscard
-    # | cdiscard
-    # | dterm
-    # | subroutine_call
+    | cinit
+    | cterm
+    | qmeas
+    | qdiscard
+    | cdiscard
+    | dterm
+    | subroutine_call
     | comment
     ;
 
@@ -51,7 +51,20 @@ cgate::CGate = "CGate[" ~ name:string "]" inverse:["*"] "(" wires:",".{wire} ")"
 cswap::CSwap = "CSwap(" ~ wire1:wire "," wire2:wire ")" >control_app ;
 qprep::QPrep = "QPrep(" ~ wire:wire ")" no_control ;
 qunprep::QUnprep = "QUnprep(" ~ wire:wire ")" no_control ;
-qinit::QInit = state:("QInit0"| "QInit1") ~ "(" wire:wire ")" no_control;
+qinit::QInit = state:("QInit0" | "QInit1") ~ "(" wire:wire ")" no_control;
+cinit::CInit = state:("CInit0" | "CInit1") ~ "(" wire:wire ")" no_control;
+qterm::QTerm = state:("QTerm0" | "QTerm1") ~ "(" wire:wire ")" no_control;
+cterm::CTerm = state:("CTerm0" | "CTerm1") ~ "(" wire:wire ")" no_control;
+qmeas::QMeas = "QMeas(" ~ wire:wire ")" ;
+qdiscard::QDiscard = "QDiscard(" ~ wire:wire ")" ;
+cdiscard::CDiscard = "CDiscard(" ~ wire:wire ")" ;
+dterm::DTerm = state:("DTerm0" | "Dterm1") ~ "(" wire:wire ")" ;
+subroutine_call::SubCall = "Subroutine" ~ ["(x" repetitions:int ")"]
+    "[" name:string ", shape" shape:string "]"
+    inverse:["*"]
+    "(" inputs:",".{int}+ ")"
+    "-> (" outputs:",".{int}+ ")"
+    >control_app ;
 
 
 comment::Comment = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;

@@ -55,3 +55,21 @@ class TestParser(TestCase):
         parsed = self.parser.parse(text, rule_name="qinit")
         self.assertEqual("QInit1", parsed["state"])
         self.assertEqual('0', parsed["wire"]["qubit"])
+
+    def test_sub_call_x1(self):
+        text = '''Subroutine["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2) with controls=[+5] with nocontrol'''
+        parsed = self.parser.parse(text, rule_name="subroutine_call")
+        self.assertEqual(None, parsed["repetitions"])
+        self.assertEqual("SP", parsed["name"])
+        self.assertEqual("([Q,Q,Q],())", parsed["shape"])
+        self.assertEqual(['3', '4', '5'], parsed['inputs'])
+        self.assertEqual(['0', '1', '2'], parsed['outputs'])
+
+    def test_sub_call_x154(self):
+        text = '''Subroutine(x154)["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2)'''
+        parsed = self.parser.parse(text, rule_name="subroutine_call")
+        self.assertEqual("154", parsed["repetitions"])
+        self.assertEqual("SP", parsed["name"])
+        self.assertEqual("([Q,Q,Q],())", parsed["shape"])
+        self.assertEqual(['3', '4', '5'], parsed['inputs'])
+        self.assertEqual(['0', '1', '2'], parsed['outputs'])
