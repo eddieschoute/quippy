@@ -49,3 +49,8 @@ class TestParser(TestCase):
         self.assertEqual(2, len(parsed['wires']))
         self.assertEqual('0', parsed['wires'][0]['qubit'])
         self.assertEqual('qs[1]', parsed['wires'][1]['text'])
+
+    def test_qinit_gate(self):
+        text = '''QInit1(0:"qs[0]") with nocontrol'''
+        parsed = self.parser.parse(text, rule_name="qinit")
+        pass
