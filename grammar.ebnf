@@ -14,7 +14,7 @@ subroutine::Subroutine =
     "Controllable: "controllable:("yes"|"no"|"classically") newline
     circuit:circuit ;
 
-arity::Arity = @:",".{type_assignment}+ ;
+arity = @:",".{type_assignment}+ ;
 type_assignment::TypeAssignment = number:int ":" type:("Qbit"|"Cbit") ;
 
 control_app = controlled:(controlled | no_control) ;
@@ -51,7 +51,7 @@ cgate::CGate = "CGate[" ~ name:string "]" inverse:["*"] "(" wires:",".{wire} ")"
 cswap::CSwap = "CSwap(" ~ wire1:wire "," wire2:wire ")" >control_app ;
 qprep::QPrep = "QPrep(" ~ wire:wire ")" no_control ;
 qunprep::QUnprep = "QUnprep(" ~ wire:wire ")" no_control ;
-qinit::QInit = "QInit" ~ value:( &"1" `true` | &"0" `false`) "(" wire:wire ")" no_control;
+qinit::QInit = state:("QInit0"| "QInit1") ~ "(" wire:wire ")" no_control;
 
 
 comment::Comment = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;

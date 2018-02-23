@@ -10,11 +10,11 @@ class TestParser(TestCase):
     def setUp(self):
         self.parser = _parser.QuipperParser()
 
-    def test_iostatement(self):
+    def test_arity(self):
         basic_text = """0:Qbit"""
         parsed = self.parser.parse(basic_text, rule_name="arity")
         self.assertEqual(1, len(parsed))
-        self.assertEqual(0, parsed[0]['number'])
+        self.assertEqual('0', parsed[0]['number'])
 
     def test_start(self):
         basic_text = """Inputs: 0:Qbit, 1:Cbit
@@ -24,10 +24,10 @@ class TestParser(TestCase):
         self.assertEqual(2, len(parsed['inputs']))
         self.assertEqual(0, len(parsed['gatelist']))
         self.assertEqual(2, len(parsed['outputs']))
-        self.assertEqual(0, parsed['inputs'][0]['number'])
+        self.assertEqual('0', parsed['inputs'][0]['number'])
         self.assertEqual('Qbit', parsed['inputs'][0]['type'])
-        self.assertEqual(1, parsed['output'][1]['number'])
-        self.assertEqual('Cbit', parsed['output'][1]['type'])
+        self.assertEqual('1', parsed['outputs'][1]['number'])
+        self.assertEqual('Cbit', parsed['outputs'][1]['type'])
 
     def test_gatelist_qgate(self):
         basic_text = '''QGate["not"](0) with controls=[+2] with nocontrol'''
@@ -53,4 +53,5 @@ class TestParser(TestCase):
     def test_qinit_gate(self):
         text = '''QInit1(0:"qs[0]") with nocontrol'''
         parsed = self.parser.parse(text, rule_name="qinit")
-        pass
+        self.assertEqual("QInit1", parsed["state"])
+        self.assertEqual('0', parsed["wire"]["qubit"])

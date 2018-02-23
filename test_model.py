@@ -12,11 +12,11 @@ class TestModel(TestCase):
     def setUp(self):
         self.parser = _parser.QuipperParser(semantics=_model.QuipperModelBuilderSemantics())
 
-    def test_iostatement(self):
-        basic_text = """Inputs: 0:Qbit"""
-        parsed: _model.IOStatement = self.parser.parse(basic_text, rule_name="iostatement")
-        self.assertEqual(1, len(parsed.qubits))
-        self.assertEqual(0, parsed.qubits[0])
+    def test_typeassignment(self):
+        basic_text = """0:Qbit"""
+        parsed: _model.TypeAssignment = self.parser.parse(basic_text, rule_name="type_assignment")
+        self.assertEqual(0, parsed.number)
+        self.assertEqual("Qbit", parsed.type)
 
     def test_start(self):
         basic_text = """Inputs: 0:Qbit, 1:Qbit
