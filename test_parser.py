@@ -30,11 +30,13 @@ class TestParser(TestCase):
         self.assertEqual('Cbit', parsed['outputs'][1]['type'])
 
     def test_gatelist_qgate(self):
-        basic_text = '''QGate["not"](0) with controls=[+2] with nocontrol'''
+        basic_text = '''QGate["not"](0) with controls=[+2,-3] with nocontrol'''
         parsed = self.parser.parse(basic_text, rule_name="gate")
         self.assertEqual('not', parsed['name'])
         self.assertEqual(None, parsed['inverse'])
-        self.assertEqual('2', parsed['controlled']['control']['qubit'])
+        self.assertEqual(2, len(parsed['controlled']['controls']))
+        self.assertEqual('+2', parsed['controlled']['controls'][0])
+        self.assertEqual('-3', parsed['controlled']['controls'][1])
 
     def test_wire(self):
         basic_text = '''0:"qs[0]"'''

@@ -1,12 +1,17 @@
 @@grammar :: Quipper
 @@whitespace :: /[^\S\n]*/
 
+# The root of any program
 start::BCircuit = circuit:circuit subroutines:{subroutine newline} newline $ ;
+
+# A sequence of gates
 circuit::Circuit =
     "Inputs: "inputs:arity newline
     gatelist:{gate newline}
     "Outputs: "outputs:arity
     ;
+
+# "Function" definitions
 subroutine::Subroutine =
     newline
     "Subroutine: "name:string newline
@@ -14,14 +19,16 @@ subroutine::Subroutine =
     "Controllable: "controllable:("yes"|"no"|"classically") newline
     circuit:circuit ;
 
+# Wires and their types.
 arity = @:",".{type_assignment}+ ;
 type_assignment::TypeAssignment = number:int ":" type:("Qbit"|"Cbit") ;
 
-control_app = controlled:(controlled | no_control) ;
-controlled::Controlled = "with controls=[" ~ control:control "] with nocontrol" ;
+# Gate control
+control_app = [controlled:controlled] [no_control:no_control];
+controlled::Controlled = "with controls=[" ~ controls:",".{int}+ "]" ;
 no_control::NoControl = "with nocontrol" ;
 
-
+# All gates
 gate
     =
     | qgate
@@ -43,41 +50,37 @@ gate
     | comment
     ;
 
+# Gate definitions
 qgate::QGate::Gate = "QGate[" ~ name:string "]" inverse:["*"] "(" qubit:int ")" > control_app;
 qrot::QRot::Gate = "QRot[" ~ string "," double "](" int ")" ;
-gphase::GPhase = "Gphase() with t=" ~ timestep:double >control_app "with anchors=[" ~ wires:",".{wire} "]" ;
-cnot::CNot = "CNot(" ~ wire:wire ")" >control_app ;
-cgate::CGate = "CGate[" ~ name:string "]" inverse:["*"] "(" wires:",".{wire} ")" no_control;
-cswap::CSwap = "CSwap(" ~ wire1:wire "," wire2:wire ")" >control_app ;
-qprep::QPrep = "QPrep(" ~ wire:wire ")" no_control ;
-qunprep::QUnprep = "QUnprep(" ~ wire:wire ")" no_control ;
-qinit::QInit = state:("QInit0" | "QInit1") ~ "(" wire:wire ")" no_control;
-cinit::CInit = state:("CInit0" | "CInit1") ~ "(" wire:wire ")" no_control;
-qterm::QTerm = state:("QTerm0" | "QTerm1") ~ "(" wire:wire ")" no_control;
-cterm::CTerm = state:("CTerm0" | "CTerm1") ~ "(" wire:wire ")" no_control;
-qmeas::QMeas = "QMeas(" ~ wire:wire ")" ;
-qdiscard::QDiscard = "QDiscard(" ~ wire:wire ")" ;
-cdiscard::CDiscard = "CDiscard(" ~ wire:wire ")" ;
-dterm::DTerm = state:("DTerm0" | "Dterm1") ~ "(" wire:wire ")" ;
-subroutine_call::SubCall = "Subroutine" ~ ["(x" repetitions:int ")"]
+gphase::GPhase::Gate = "Gphase() with t=" ~ timestep:double >control_app "with anchors=[" ~ wires:",".{wire} "]" ;
+cnot::CNo::Gate  = "CNot(" ~ wire:wire ")" >control_app ;
+cgate::CGat::Gate  = "CGate[" ~ name:string "]" inverse:["*"] "(" wires:",".{wire} ")" no_control;
+cswap::CSwap::Gate = "CSwap(" ~ wire1:wire "," wire2:wire ")" >control_app ;
+qprep::QPrep::Gate = "QPrep(" ~ wire:wire ")" no_control ;
+qunprep::QUnprep::Gate = "QUnprep(" ~ wire:wire ")" no_control ;
+qinit::QInit::Gate = state:("QInit0" | "QInit1") ~ "(" wire:wire ")" no_control;
+cinit::CInit::Gate = state:("CInit0" | "CInit1") ~ "(" wire:wire ")" no_control;
+qterm::QTerm::Gate = state:("QTerm0" | "QTerm1") ~ "(" wire:wire ")" no_control;
+cterm::CTerm::Gate = state:("CTerm0" | "CTerm1") ~ "(" wire:wire ")" no_control;
+qmeas::QMeas::Gate = "QMeas(" ~ wire:wire ")" ;
+qdiscard::QDiscard::Gate = "QDiscard(" ~ wire:wire ")" ;
+cdiscard::CDiscard::Gate = "CDiscard(" ~ wire:wire ")" ;
+dterm::DTerm::Gate = state:("DTerm0" | "Dterm1") ~ "(" wire:wire ")" ;
+subroutine_call::SubCall::Gate = "Subroutine" ~ ["(x" repetitions:int ")"]
     "[" name:string ", shape" shape:string "]"
     inverse:["*"]
     "(" inputs:",".{int}+ ")"
     "-> (" outputs:",".{int}+ ")"
     >control_app ;
+comment::Comment::Gate = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;
 
-
-comment::Comment = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;
+# Reference to an input wire and a textual description
 wire::Wire = qubit:int ":" text:string ;
 
-control::Control
-    =
-    | direction:"-" qubit:int
-    | direction:"+" qubit:int
-    ;
-
+# Literals
 string = '"'@:String_literal'"';
 String_literal::str = /[^"]+/ ;
-int::int = /\d+/ ;
+int::int = /([+|-])?\d+/ ;
 double::float = /(-)?\d+\.\d+e(-)?\d\d/ ;
 newline = /\n/ ;
