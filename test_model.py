@@ -23,18 +23,21 @@ class TestModel(TestCase):
         Outputs: 0:Qbit, 1:Qbit
         """
         parsed: _model.Circuit = self.parser.parse(basic_text, rule_name="circuit")
-        self.assertEqual(2, len(parsed.input.qubits))
+        self.assertEqual(2, len(parsed.inputs))
         self.assertEqual(0, len(parsed.gatelist))
-        self.assertEqual(2, len(parsed.output.qubits))
-        self.assertEqual(0, parsed.input.qubits[0])
-        self.assertEqual(1, parsed.input.qubits[1])
+        self.assertEqual(2, len(parsed.outputs))
+        self.assertEqual(0, parsed.inputs[0].number)
+        self.assertEqual('Qbit', parsed.inputs[0].type)
+        self.assertEqual(1, parsed.inputs[1].number)
 
     def test_gatelist_qgate(self):
-        basic_text = '''QGate["not"](0) with controls=[+2] with nocontrol'''
-        parsed: _model.QGate = self.parser.parse(basic_text, rule_name="gatelist")
+        basic_text = '''QGate["not"](0) with controls=[+2,-3] with nocontrol'''
+        parsed: _model.QGate = self.parser.parse(basic_text, rule_name="gate")
         self.assertEqual('not', parsed.name)
         self.assertEqual(None, parsed.inverse)
-        self.assertEqual(2, parsed.controlled.control.qubit)
+        self.assertEqual(2, len(parsed.controlled.controls))
+        self.assertEqual(2, parsed.controlled.controls[0])
+        self.assertEqual(-3, parsed.controlled.controls[1])
 
     def test_wire(self):
         basic_text = '''0:"qs[0]"'''
@@ -49,6 +52,42 @@ class TestModel(TestCase):
         self.assertEqual(2, len(parsed.wires))
         self.assertEqual(0, parsed.wires[0].qubit)
         self.assertEqual('qs[1]', parsed.wires[1].text)
+
+    def test_subroutine(self):
+        text = '''
+        Subroutine: "L"
+        Shape: "([Q,Q],())"
+        Controllable: yes
+        Inputs: 0:Qbit, 1:Qbit
+        QGate["H"](0) with nocontrol
+        QGate["H"](1) with nocontrol
+        Outputs: 0:Qbit, 1:Qbit
+        '''
+        parsed: _model.Subroutine = self.parser.parse(text, rule_name="subroutine")
+        self.assertEqual("L", parsed.name)
+        self.assertEqual("([Q,Q],())", parsed.shape)
+        self.assertEqual("yes", parsed.controllable)
+        self.assertEqual(2, len(parsed.circuit.gatelist))
+
+    def test_circuit_subroutine(self):
+        text = '''Inputs: 0:Qbit, 1:Qbit
+        Subroutine(x1)["L", shape "([Q,Q))"] (0,1) -> (0,1)
+        Subroutine(x26445964)["C", shape "([Q,Q))"] (0,1) -> (0,1)
+        Subroutine(x1)["R", shape "([Q,Q))"] (0,1) -> (0,1)
+        Outputs: 0:Qbit, 1:Qbit
+        
+        Subroutine: "L"
+        Shape: "([Q,Q],())"
+        Controllable: yes
+        Inputs: 0:Qbit, 1:Qbit
+        QGate["H"](0) with nocontrol
+        QGate["H"](1) with nocontrol
+        Outputs: 0:Qbit, 1:Qbit
+        '''
+        parsed: _model.BCircuit = self.parser.parse(text)
+        self.assertEqual(1, len(parsed.subroutines))
+        self.assertEqual("L", parsed.subroutines[0].name)
+        self.assertEqual(1, parsed.subroutines[0].circuit.outputs[1].number)
 
     def test_real(self):
         """Try to parse all files in the optimizer resource folder."""

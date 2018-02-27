@@ -2,11 +2,11 @@
 @@whitespace :: /[^\S\n]*/
 
 # The root of any program
-start::BCircuit = circuit:circuit subroutines:{subroutine newline} newline $ ;
+start::BCircuit = circuit:circuit subroutines:{subroutine} $ ;
 
 # A sequence of gates
 circuit::Circuit =
-    "Inputs: "inputs:arity newline
+    "Inputs: "inputs:arity
     gatelist:{gate newline}
     "Outputs: "outputs:arity
     ;
@@ -14,13 +14,14 @@ circuit::Circuit =
 # "Function" definitions
 subroutine::Subroutine =
     newline
-    "Subroutine: "name:string newline
-    "Shape: "shape:string newline
-    "Controllable: "controllable:("yes"|"no"|"classically") newline
-    circuit:circuit ;
+    "Subroutine:" ~ name:string newline
+    "Shape:" shape:string newline
+    "Controllable:" controllable:("yes"|"no"|"classically") newline
+    circuit:circuit
+    ;
 
 # Wires and their types.
-arity = @:",".{type_assignment}+ ;
+arity = @:",".{type_assignment}+ newline ;
 type_assignment::TypeAssignment = number:int ":" type:("Qbit"|"Cbit") ;
 
 # Gate control
