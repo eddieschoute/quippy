@@ -1,5 +1,8 @@
+import glob
 from pathlib import Path
 from unittest import TestCase
+
+from tatsu.exceptions import FailedParse
 
 import _parser
 
@@ -75,3 +78,18 @@ class TestParser(TestCase):
         self.assertEqual("([Q,Q,Q],())", parsed["shape"])
         self.assertEqual(['3', '4', '5'], parsed['inputs'])
         self.assertEqual(['0', '1', '2'], parsed['outputs'])
+
+    def test_optimizer(self):
+        """Try to parse all files in the optimizer resource folder."""
+        optimizer_files_path = Path("resources") / "optimizer" / "**"
+        optimizer_files = glob.glob(str(optimizer_files_path), recursive=True)
+        quipper_paths = filter(lambda path: not path.is_dir()
+                                            and path.suffix == '',
+                               map(lambda s: Path(s), optimizer_files))
+        for path in quipper_paths:
+            print(path)
+            with open(path) as quipper_file:
+                try:
+                    self.parser.parse(quipper_file.read())
+                except FailedParse as e:
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
