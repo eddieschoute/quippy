@@ -2,11 +2,11 @@
 @@whitespace :: /[^\S\n]*/
 
 # The root of any program
-start::BCircuit = circuit:circuit subroutines:{subroutine} $ ;
+start::BCircuit = circuit:circuit subroutines:{subroutine} {newline} $ ;
 
 # A sequence of gates
 circuit::Circuit =
-    "Inputs: "inputs:arity
+    "Inputs:" ~ inputs:arity
     gatelist:{gate newline}
     "Outputs: "outputs:arity
     ;
@@ -80,8 +80,8 @@ comment::Comment::Gate = "Comment[" ~ text:string "](" wires:",".{wire}+ ")" ;
 wire::Wire = qubit:int ":" text:string ;
 
 # Literals
-string = '"'@:String_literal'"';
+string = '"'@:String_literal'"';  # Don't include the quotes.
 String_literal::str = /[^"]+/ ;
 int::int = /([+|-])?\d+/ ;
-double::float = /(-)?\d+\.\d+e(-)?\d\d/ ;
+double::float = /(-)?\d+\.\d+e(-)?\d+/ ;
 newline = /\n/ ;

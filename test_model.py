@@ -1,4 +1,5 @@
 import glob
+import logging
 from pathlib import Path
 from unittest import TestCase
 
@@ -6,6 +7,8 @@ from tatsu.exceptions import FailedParse
 
 import _model
 import _parser
+
+logger = logging.getLogger(__name__)
 
 
 class TestModel(TestCase):
@@ -89,13 +92,35 @@ class TestModel(TestCase):
         self.assertEqual("L", parsed.subroutines[0].name)
         self.assertEqual(1, parsed.subroutines[0].circuit.outputs[1].number)
 
-    def test_real(self):
+    def test_optimizer(self):
         """Try to parse all files in the optimizer resource folder."""
         optimizer_files_path = Path("resources") / "optimizer" / "**"
         optimizer_files = glob.glob(str(optimizer_files_path), recursive=True)
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',
                                map(lambda s: Path(s), optimizer_files))
+        for path in quipper_paths:
+            print(path)
+            with open(path) as quipper_file:
+                try:
+                    self.parser.parse(quipper_file.read())
+                except FailedParse as e:
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
+
+    def test_simcount(self):
+        """Try to parse all files in the simcount resource folder."""
+        simcount_files_path = Path("resources") / "simcount"
+        if(not simcount_files_path.exists()):
+            logger.warning('''simcount resource does not exist, skipping tests!
+            Download the resource from https://github.com/njross/simcount/blob/master/samples.tar.gz
+            and put the extracted folder in resources named "simcount".
+            ''')
+            return
+
+        simcount_files = glob.glob(str(simcount_files_path / "**"), recursive=True)
+        quipper_paths = filter(lambda path: not path.is_dir()
+                                            and path.suffix == '',
+                               map(lambda s: Path(s), simcount_files))
         for path in quipper_paths:
             print(path)
             with open(path) as quipper_file:
