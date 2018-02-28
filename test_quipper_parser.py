@@ -38,10 +38,10 @@ class TestParser(TestCase):
                 ])
             ]), parsed)
 
-    def test_gatelist_qgate(self):
-        basic_text = '''QGate["not"](0) with controls=[+2,-3] with nocontrol'''
+    def test_qgate(self):
+        text = '''QGate["not"](0) with controls=[+2,-3] with nocontrol'''
         parser = quipper_parser(start='gate')
-        parsed = parser.parse(basic_text)
+        parsed = parser.parse(text)
         self.assertEqual(Tree('qgate', [
             '"not"',
             "0",
@@ -80,7 +80,7 @@ class TestParser(TestCase):
         parser = quipper_parser('gate')
         parsed = parser.parse(text)
         self.assertEqual(Tree('qinit', [
-            "1",
+            'QInit1',
             Tree('wire', [
                 "0",
                 '"qs[0]"'
