@@ -89,8 +89,8 @@ class TestParser(TestCase):
         self.assertEqual(Tree('subroutine_call', [
             '"SP"',
             '"([Q,Q,Q],())"',
-            Tree('int_list', ["3","4","5"]),
-            Tree('int_list', ["0","1","2"]),
+            Tree('int_list', ["3", "4", "5"]),
+            Tree('int_list', ["0", "1", "2"]),
             Tree('control_app', [
                 Tree('int_list', ["+5"]),
                 "with nocontrol"
@@ -105,7 +105,41 @@ class TestParser(TestCase):
             "154",
             '"SP"',
             '"([Q,Q,Q],())"',
-            Tree('int_list', ["3","4","5"]),
-            Tree('int_list', ["0","1","2"]),
+            Tree('int_list', ["3", "4", "5"]),
+            Tree('int_list', ["0", "1", "2"]),
             Tree('control_app', [])
+            ]), parsed)
+
+    def test_subroutine(self):
+        text = '''
+        Subroutine: "S1"
+        Shape: "([Q],())"
+        Controllable: yes
+        Inputs: 0:Qbit
+        QGate["H"](0) with nocontrol
+        QGate["H"](1) with nocontrol
+        Outputs: 0:Qbit
+        '''
+        parser = quipper_parser(start='subroutine')
+        parsed = parser.parse(text)
+        # Break the equality check into two steps because it is too big.
+        circuit = parsed.children[7]
+        circuit_tree = Tree('circuit', [
+            Tree('arity', [Tree('type_assignment', ['0', 'Qbit']), '\n']),
+            Tree('qgate', ['"H"', '0', Tree('control_app', ['with nocontrol'])]),
+            '\n',
+            Tree('qgate', ['"H"', '1', Tree('control_app', ['with nocontrol'])]),
+            '\n',
+            Tree('arity', [Tree('type_assignment', ['0', 'Qbit']), '\n']),
+            ])
+        self.assertEqual(circuit_tree, circuit)
+        self.assertEqual(Tree('subroutine', [
+            '\n',
+            '"S1"',
+            '\n',
+            '"([Q],())"',
+            '\n',
+            'yes',
+            '\n',
+            circuit_tree
             ]), parsed)
