@@ -1,6 +1,7 @@
-import glob
 from pathlib import Path
 from unittest import TestCase
+
+from lark import Tree
 
 from quipper_parser import quipper_parser
 
@@ -12,65 +13,99 @@ class TestParser(TestCase):
         basic_text = """0:Qbit"""
         parser = quipper_parser(start='arity')
         parsed = parser.parse(basic_text)
-        self.assertEqual(1, len(parsed))
-        self.assertEqual('0', parsed[0]['number'])
+        self.assertEqual(Tree('type_assignment', ['0', 'Qbit']), parsed)
 
-    def test_start(self):
+    def test_circuit(self):
         basic_text = """Inputs: 0:Qbit, 1:Cbit
         Outputs: 0:Qbit, 1:Cbit
         """
-        parsed = self.parser.parse(basic_text, rule_name="circuit")
-        self.assertEqual(2, len(parsed['inputs']))
-        self.assertEqual(0, len(parsed['gatelist']))
-        self.assertEqual(2, len(parsed['outputs']))
-        self.assertEqual('0', parsed['inputs'][0]['number'])
-        self.assertEqual('Qbit', parsed['inputs'][0]['type'])
-        self.assertEqual('1', parsed['outputs'][1]['number'])
-        self.assertEqual('Cbit', parsed['outputs'][1]['type'])
+        parser = quipper_parser(start='circuit')
+        parsed = parser.parse(basic_text)
+        self.assertEqual(Tree('circuit', [
+            Tree('arity', [
+                Tree('type_assignment', ['0', 'Qbit']),
+                Tree('type_assignment', ['1', 'Cbit']),
+                '\n'
+                ]),
+            Tree('arity', [
+                Tree('type_assignment', ['0', 'Qbit']),
+                Tree('type_assignment', ['1', 'Cbit']),
+                '\n'
+                ])
+            ]), parsed)
 
     def test_gatelist_qgate(self):
         basic_text = '''QGate["not"](0) with controls=[+2,-3] with nocontrol'''
-        parsed = self.parser.parse(basic_text, rule_name="gate")
-        self.assertEqual('not', parsed['name'])
-        self.assertEqual(None, parsed['inverse'])
-        self.assertEqual(2, len(parsed['controlled']['controls']))
-        self.assertEqual('+2', parsed['controlled']['controls'][0])
-        self.assertEqual('-3', parsed['controlled']['controls'][1])
+        parser = quipper_parser(start='gate')
+        parsed = parser.parse(basic_text)
+        self.assertEqual(Tree('qgate', [
+            '"not"',
+            "0",
+            Tree('control_app', [
+                Tree('controlled', [
+                    "+2",
+                    "-3"
+                    ]),
+                "with nocontrol"
+                ])
+            ]), parsed)
 
     def test_wire(self):
         basic_text = '''0:"qs[0]"'''
-        parsed = self.parser.parse(basic_text, rule_name="wire")
-        self.assertEqual('qs[0]', parsed['text'])
-        self.assertEqual('0', parsed['qubit'])
+        parser = quipper_parser(start='wire')
+        parsed = parser.parse(basic_text)
+        self.assertEqual(Tree('wire', [
+            "0",
+            '"qs[0]"'
+            ]), parsed)
 
     def test_statement_comment(self):
         basic_text = '''Comment["ENTER: qft_big_endian"](0:"qs[0]", 1:"qs[1]")'''
-        parsed = self.parser.parse(basic_text, rule_name="comment")
-        self.assertEqual('ENTER: qft_big_endian', parsed['text'])
-        self.assertEqual(2, len(parsed['wires']))
-        self.assertEqual('0', parsed['wires'][0]['qubit'])
-        self.assertEqual('qs[1]', parsed['wires'][1]['text'])
+        parser = quipper_parser(start='gate')
+        parsed = parser.parse(basic_text)
+        self.assertEqual(Tree('comment', [
+            '"ENTER: qft_big_endian"',
+            Tree('wire', ['0', '"qs[0]"']),
+            Tree('wire', ['1', '"qs[1]"'])
+            ]), parsed)
 
     def test_qinit_gate(self):
         text = '''QInit1(0:"qs[0]") with nocontrol'''
-        parsed = self.parser.parse(text, rule_name="qinit")
-        self.assertEqual("QInit1", parsed["state"])
-        self.assertEqual('0', parsed["wire"]["qubit"])
+        parser = quipper_parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(Tree('qinit', [
+            "1",
+            Tree('wire', [
+                "0",
+                '"qs[0]"'
+                ]),
+            "with nocontrol"
+            ]), parsed)
 
     def test_sub_call_x1(self):
         text = '''Subroutine["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2) with controls=[+5] with nocontrol'''
-        parsed = self.parser.parse(text, rule_name="subroutine_call")
-        self.assertEqual(None, parsed["repetitions"])
-        self.assertEqual("SP", parsed["name"])
-        self.assertEqual("([Q,Q,Q],())", parsed["shape"])
-        self.assertEqual(['3', '4', '5'], parsed['inputs'])
-        self.assertEqual(['0', '1', '2'], parsed['outputs'])
+        parser = quipper_parser(start='gate')
+        parsed = parser.parse(text)
+        self.assertEqual(Tree('subroutine_call', [
+            '"SP"',
+            '"([Q,Q,Q],())"',
+            Tree('int_list', ["3","4","5"]),
+            Tree('int_list', ["0","1","2"]),
+            Tree('control_app', [
+                Tree('int_list', ["+5"]),
+                "with nocontrol"
+                ])
+            ]), parsed)
 
     def test_sub_call_x154(self):
         text = '''Subroutine(x154)["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2)'''
-        parsed = self.parser.parse(text, rule_name="subroutine_call")
-        self.assertEqual("154", parsed["repetitions"])
-        self.assertEqual("SP", parsed["name"])
-        self.assertEqual("([Q,Q,Q],())", parsed["shape"])
-        self.assertEqual(['3', '4', '5'], parsed['inputs'])
-        self.assertEqual(['0', '1', '2'], parsed['outputs'])
+        parser = quipper_parser(start='gate')
+        parsed = parser.parse(text)
+        self.assertEqual(Tree('subroutine_call', [
+            "154",
+            '"SP"',
+            '"([Q,Q,Q],())"',
+            Tree('int_list', ["3","4","5"]),
+            Tree('int_list', ["0","1","2"]),
+            Tree('control_app', [])
+            ]), parsed)
