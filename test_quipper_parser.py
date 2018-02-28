@@ -10,10 +10,14 @@ ADDER_FILE = Path("resources") / "optimizer" / "Arithmetic_and_Toffoli" / "adder
 
 class TestParser(TestCase):
     def test_arity(self):
-        basic_text = """0:Qbit"""
+        basic_text = """0:Qbit
+        """
         parser = quipper_parser(start='arity')
         parsed = parser.parse(basic_text)
-        self.assertEqual(Tree('type_assignment', ['0', 'Qbit']), parsed)
+        self.assertEqual(Tree('arity', [
+            Tree('type_assignment', ['0', 'Qbit']),
+            '\n'
+            ]), parsed)
 
     def test_circuit(self):
         basic_text = """Inputs: 0:Qbit, 1:Cbit
@@ -42,7 +46,7 @@ class TestParser(TestCase):
             '"not"',
             "0",
             Tree('control_app', [
-                Tree('controlled', [
+                Tree('int_list', [
                     "+2",
                     "-3"
                     ]),
@@ -65,8 +69,10 @@ class TestParser(TestCase):
         parsed = parser.parse(basic_text)
         self.assertEqual(Tree('comment', [
             '"ENTER: qft_big_endian"',
-            Tree('wire', ['0', '"qs[0]"']),
-            Tree('wire', ['1', '"qs[1]"'])
+            Tree('wire_list', [
+                Tree('wire', ['0', '"qs[0]"']),
+                Tree('wire', ['1', '"qs[1]"'])
+                ])
             ]), parsed)
 
     def test_qinit_gate(self):
