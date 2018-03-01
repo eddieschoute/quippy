@@ -9,7 +9,9 @@ SUB_CONTROL : "yes"
     | "classically"
 
 // Wires and their types
-arity : type_assignment ("," type_assignment)* _NEWLINE
+// Note: Trailing comma is allowed to parse all example inputs (it is erroneous)
+// See also: https://github.com/njross/optimizer/issues/1
+arity : type_assignment ("," type_assignment)* ","? _NEWLINE
 type_assignment : int ":" TYPE
 TYPE: "Qbit"
     | "Cbit"
@@ -30,6 +32,7 @@ NO_CONTROL : "with nocontrol"
     | qunprep
     | qinit
     | cinit
+    | qterm
     | cterm
     | qmeas
     | qdiscard
@@ -64,13 +67,14 @@ dterm       : DTERM_STATE "(" wire ")"
 DTERM_STATE : "DTerm0" | "DTerm1"
 subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" inversion "(" int_list ") -> (" int_list ")" control_app
 // Note: ] and ( have to be separate tokens for the lexer.
-comment : "Comment[" string "]" "(" wire_list ")"
-// Make node for list to disambiguate if needed.
-wire_list: wire ("," wire)*
+comment : "Comment[" string "]" "(" wire_string_list ")"
+wire_string_list: wire ":" string ("," wire ":" string)*
+
 int_list : int ("," int)*
 
-// Reference to an input wire and a textual description
-wire : int ":" string
+// Wires are represented as integers.
+wire : int
+wire_list : wire ("," wire)*
 
 // Newlines are significant
 %import common.WS_INLINE -> WS
