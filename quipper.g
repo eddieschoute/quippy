@@ -55,13 +55,14 @@ CINIT_STATE : "CInit0" | "CInit1"
 qterm       : QTERM_STATE "(" wire ")" NO_CONTROL?
 QTERM_STATE : "QTerm0" | "QTerm1"
 cterm       : CTERM_STATE "(" wire ")" NO_CONTROL?
-CTERM_STATE : "CTERM0" | "CTERM1"
+CTERM_STATE : "CTerm0" | "CTerm1"
 qmeas       : "QMeas(" wire ")"
 qdiscard    : "QDiscard(" wire ")"
 cdiscard    : "CDiscard(" wire ")"
 dterm       : DTERM_STATE "(" wire ")"
 DTERM_STATE : "DTerm0" | "DTerm1"
 subroutine_call : "Subroutine" ["(x" INT ")"] "[" STRING ", shape" STRING "]" "*"? "(" int_list ") -> (" int_list ")" control_app
+// Note: ] and ( have to be separate tokens for the lexer.
 comment : "Comment[" STRING "]" "(" wire_list ")"
 // Make node for list to disambiguate if needed.
 wire_list: wire ("," wire)*
