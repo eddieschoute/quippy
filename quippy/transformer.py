@@ -26,13 +26,27 @@ class QuipperTransformer(Transformer):
         return list(t)
 
     def qgate(self, t):
-        if t[1] == "*":
-            return QGate(name=t[0], inverted=True, wire=t[2], control=t[3])
-        else:
-            return QGate(name=t[0], inverted=False, wire=t[1], control=t[2])
+        return QGate(name=t[0], inverted=len(t[1]) > 0, wire=t[2], control=t[3])
 
     def qrot(self, t):
         return QRot(*t)
+
+    def subroutine_call(self, t):
+        repetitions = 0
+        if isinstance(t[0], int):
+            repetitions = t[0]
+            t.pop()
+
+        return SubroutineCall(
+            repetitions=repetitions,
+            name=t[0],
+            shape=t[1],
+            inverted=len(t[2]) > 0,
+            inputs=t[3],
+            outputs=t[4],
+            control=t[5]
+            )
+
 
     def control_app(self, t):
         if not t:
@@ -91,6 +105,14 @@ class QRot(Gate, NamedTuple):
     timestep: float
     wire: int
 
+class SubroutineCall(Gate, NamedTuple):
+    repetitions: int
+    name: str
+    shape: str
+    inverted: bool
+    inputs: List[int]
+    outputs: List[int]
+    control: Control
 
 class Circuit(NamedTuple):
     inputs: List[TypeAssignment]

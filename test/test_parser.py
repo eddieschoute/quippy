@@ -212,10 +212,9 @@ class TestParser(TestCase):
             circuit_tree
             ]), parsed)
 
-    @unittest.skip
     def test_optimizer(self):
         """Try to parse all files in the optimizer resource folder."""
-        optimizer_files_path = Path("resources") / "optimizer" / "**"
+        optimizer_files_path = Path(__file__).parents[1] / "resources" / "optimizer" / "**"
         optimizer_files = glob.glob(str(optimizer_files_path), recursive=True)
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',

@@ -39,12 +39,12 @@ NO_CONTROL : "with nocontrol"
     | comment
 
 // Gate definitions
-INVERSION   : "*" // Make sure the token does not get lost.
-qgate       : "QGate[" string "]" INVERSION? "(" int ")" control_app
+!inversion  : "*"? // Make sure the token does not get lost.
+qgate       : "QGate[" string "]" inversion "(" int ")" control_app
 qrot        : "QRot[" string "," float "]" "(" int ")"
 gphase      : "Gphase() with t=" float control_app "with anchors=[" wire_list "]"
 cnot        : "CNot(" wire ")" control_app
-cgate       : "CGate[" string "]" INVERSION? "(" wire_list ")" NO_CONTROL?
+cgate       : "CGate[" string "]" inversion "(" wire_list ")" NO_CONTROL?
 cswap       : "CSwap(" wire "," wire ")" control_app
 qprep       : "QPrep(" wire ")" NO_CONTROL?
 qunprep     : "QUnprep(" wire ")" NO_CONTROL?
@@ -62,7 +62,7 @@ qdiscard    : "QDiscard(" wire ")"
 cdiscard    : "CDiscard(" wire ")"
 dterm       : DTERM_STATE "(" wire ")"
 DTERM_STATE : "DTerm0" | "DTerm1"
-subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" INVERSION? "(" int_list ") -> (" int_list ")" control_app
+subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" inversion "(" int_list ") -> (" int_list ")" control_app
 // Note: ] and ( have to be separate tokens for the lexer.
 comment : "Comment[" string "]" "(" wire_list ")"
 // Make node for list to disambiguate if needed.
