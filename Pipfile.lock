@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f594423969c81d095fa743326ed00964bd96845ea5bfb450300f8686b232b909"
+            "sha256": "3d72e1a8882db633d946a3f0d8e8ae63e63ea23db25013d34ca4fc0cc2401d20"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -31,10 +31,7 @@
     "default": {},
     "develop": {
         "lark-parser": {
-            "hashes": [
-                "sha256:8e0b2d0d210b6debc2211c1c7bf4649cb6ccf1b3328ec8f62049e4ab8a13bcd1"
-            ],
-            "version": "==0.5.4"
+            "git": "https://github.com/erezsh/lark.git"
         }
     }
 }
