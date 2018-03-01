@@ -7,7 +7,7 @@ from unittest import TestCase
 from lark import Tree
 from lark.common import UnexpectedToken
 
-from quipper_parser import quipper_parser
+from quippy.parser import quipper_parser
 
 ADDER_FILE = Path("resources") / "optimizer" / "Arithmetic_and_Toffoli" / "adder_8_before"
 
