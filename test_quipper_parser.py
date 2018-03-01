@@ -1,4 +1,5 @@
 import glob
+import logging
 from pathlib import Path
 import unittest
 from unittest import TestCase
@@ -9,6 +10,8 @@ from lark.common import UnexpectedToken
 from quipper_parser import quipper_parser
 
 ADDER_FILE = Path("resources") / "optimizer" / "Arithmetic_and_Toffoli" / "adder_8_before"
+
+logger = logging.getLogger(__name__)
 
 
 class TestParser(TestCase):
@@ -217,6 +220,30 @@ class TestParser(TestCase):
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',
                                map(lambda s: Path(s), optimizer_files))
+        parser = quipper_parser()
+        for path in quipper_paths:
+            print(path)
+            with open(path) as quipper_file:
+                try:
+                    parser.parse(quipper_file.read())
+                except UnexpectedToken as e:
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
+
+    @unittest.skip
+    def test_simcount(self):
+        """Try to parse all files in the simcount resource folder."""
+        simcount_files_path = Path("resources") / "simcount"
+        if (not simcount_files_path.exists()):
+            logger.warning('''simcount resource does not exist, skipping tests!
+            Download the resource from https://github.com/njross/simcount/blob/master/samples.tar.gz
+            and put the extracted folder in resources named "simcount".
+            ''')
+            return
+
+        simcount_files = glob.glob(str(simcount_files_path / "**"), recursive=True)
+        quipper_paths = filter(lambda path: not path.is_dir()
+                                            and path.suffix == '',
+                               map(lambda s: Path(s), simcount_files))
         parser = quipper_parser()
         for path in quipper_paths:
             print(path)
