@@ -1,13 +1,12 @@
 // The root of any program
-start : circuit subroutine* NEWLINE
+start : circuit subroutine* NEWLINE* // Allow trailing newlines
 
 circuit : "Inputs:" arity (gate NEWLINE)* "Outputs:" arity
 
-subroutine : NEWLINE "Subroutine:" STRING NEWLINE "Shape:" STRING NEWLINE "Controllable:" SUB_CONTROL NEWLINE circuit
+subroutine: NEWLINE "Subroutine:" STRING NEWLINE "Shape:" STRING NEWLINE "Controllable:" SUB_CONTROL NEWLINE circuit
 SUB_CONTROL : "yes"
     | "no"
     | "classically"
-
 
 // Wires and their types
 arity : type_assignment ("," type_assignment)* NEWLINE
@@ -74,7 +73,9 @@ wire : INT ":" STRING
 // Newlines are significant
 %import common.WS_INLINE -> WS
 %ignore WS
-%import common.NEWLINE -> NEWLINE
+%import common.CR
+%import common.LF
+NEWLINE: (CR? LF)  // Only match a single newline
 %import common.ESCAPED_STRING -> STRING
 %import common.SIGNED_FLOAT
 FLOAT.3 : SIGNED_FLOAT

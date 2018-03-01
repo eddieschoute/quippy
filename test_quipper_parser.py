@@ -1,7 +1,9 @@
+import glob
 from pathlib import Path
 from unittest import TestCase
 
 from lark import Tree
+from lark.common import UnexpectedToken
 
 from quipper_parser import quipper_parser
 
@@ -149,3 +151,20 @@ class TestParser(TestCase):
             '\n',
             circuit_tree
             ]), parsed)
+
+    def test_optimizer(self):
+        """Try to parse all files in the optimizer resource folder."""
+        optimizer_files_path = Path("resources") / "optimizer" / "**"
+        optimizer_files = glob.glob(str(optimizer_files_path), recursive=True)
+        quipper_paths = filter(lambda path: not path.is_dir()
+                                            and path.suffix == '',
+                               map(lambda s: Path(s), optimizer_files))
+        parser = quipper_parser()
+        for path in quipper_paths:
+            print(path)
+            with open(path) as quipper_file:
+                try:
+                    parsed = parser.parse(quipper_file.read())
+                    pass
+                except UnexpectedToken as e:
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
