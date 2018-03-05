@@ -100,6 +100,10 @@ class QuipperTransformer(Transformer):
 
         return Subroutine(name=t[0], shape=t[1], controllable=controllable, circuit=t[3])
 
+    def start(self, t):
+        circuit = t.pop(0)
+        return Start(circuit, list(t))
+
 
 class Wire(NamedTuple):
     i: int
@@ -170,3 +174,7 @@ class Subroutine(NamedTuple):
     shape: str
     controllable: Control
     circuit: Circuit
+
+class Start(NamedTuple):
+    circuit: Circuit
+    subroutines: List[Subroutine]

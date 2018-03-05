@@ -18,7 +18,6 @@ from pathlib import Path
 import unittest
 from unittest import TestCase
 
-from lark import Tree
 from lark.common import UnexpectedToken
 
 from quippy.parser import quipper_parser
@@ -154,6 +153,43 @@ class TestTransformer(TestCase):
             controllable=Subroutine.Control.yes,
             circuit=expected_circuit
             ), parsed)
+
+    def test_start(self):
+        text = '''Inputs: 0:Qbit
+        QGate["H"]*(0) with controls=[+3,-5, -6] with nocontrol
+        QRot["bla", 1e-05](1)
+        Outputs: 0:Qbit
+        '''
+        parser = self.parser()
+        parsed: Subroutine = parser.parse(text)
+        expected_start = Start(
+            circuit=Circuit(
+                inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)],
+                gates=[
+                    QGate(
+                        name="H",
+                        inverted=True,
+                        wire=Wire(0),
+                        control=Control(
+                            controlled=[
+                                Wire(3),
+                                Wire(-5),
+                                Wire(-6)
+                                ],
+                            no_control=True
+                            )
+                        ),
+                    QRot(
+                        name="bla",
+                        timestep=1e-05,
+                        wire=Wire(1)
+                        )
+                    ],
+                outputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)]
+                ),
+            subroutines=[]
+            )
+        self.assertEqual(expected_start, parsed)
 
     @unittest.skip
     def test_optimizer(self):
