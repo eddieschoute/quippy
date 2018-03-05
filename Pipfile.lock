@@ -1,0 +1,41 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "69030a170aba69698e8088f7d92785471be177a16cb9f3b01aed0d03f9b1b9fe"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "3.6.4",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "17.4.0",
+            "platform_system": "Darwin",
+            "platform_version": "Darwin Kernel Version 17.4.0: Sun Dec 17 09:19:54 PST 2017; root:xnu-4570.41.2~1/RELEASE_X86_64",
+            "python_full_version": "3.6.4",
+            "python_version": "3.6",
+            "sys_platform": "darwin"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": ">=3.6"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "tatsu": {
+            "hashes": [
+                "sha256:f304b9a2889c2afadbf893db775f63975da699e409cbf45b264ea6a94ec2a7de",
+                "sha256:190f144e3500ece77c66ebcd634ede16e3eec37658fe866731aba0f65a6c5526"
+            ],
+            "version": "==4.2.5"
+        }
+    },
+    "develop": {}
+}
