@@ -7,10 +7,11 @@ name = "pypi"
 
 [packages]
 
+lark-parser = { git = "https://github.com/erezsh/lark.git" }
 
 [dev-packages]
 
-lark-parser = { git = "https://github.com/erezsh/lark.git" }
+twine = "*"
 
 [requires]
 
