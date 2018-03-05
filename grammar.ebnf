@@ -1,5 +1,5 @@
 @@grammar :: Quipper
-@@whitespace :: /[^\S\n]*/
+@@whitespace :: /[^\S\n]+/
 
 # The root of any program
 start::BCircuit = circuit:circuit subroutines:{subroutine} {newline} $ ;
