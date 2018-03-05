@@ -4,11 +4,12 @@ Project page: https://github.com/eddieschoute/quippy
 Quipper project: https://www.mathstat.dal.ca/~selinger/quipper/
 """
 
-# Always prefer setuptools over distutils
-from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+
+# Always prefer setuptools over distutils
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -45,6 +46,9 @@ setup(
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
     description='A parser for the Quipper ASCII quantum circuit output format.',  # Required
+
+    # License information
+    license='Apache 2.0',
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -94,7 +98,7 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3.6',
-    ],
+        ],
 
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
@@ -103,7 +107,7 @@ setup(
     keywords='quipper parser quantum computing',  # Optional
 
     # The supported python versions
-    python_requires = '>=3.6,<4',
+    python_requires='>=3.6,<4',
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
@@ -123,8 +127,8 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-            'lark-parser>=0.5.4,<0.6'
-            ],  # Optional
+        'lark-parser>=0.5.4,<0.6'
+        ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -146,8 +150,8 @@ setup(
     # MANIFEST.in as well.
     package_data={  # Optional
         '': ['LICENSE'],
-        'quippy': ['grammar.g'],
-    },
+        'quippy': ['quipper.g'],
+        },
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
@@ -180,8 +184,11 @@ setup(
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
         'Quipper': 'https://www.mathstat.dal.ca/~selinger/quipper/'
-    },
+        },
 
     # Tests
-    test_suite = 'test',
-)
+    test_suite='test',
+
+    # Can the project be zipped.
+    zip_safe=True,
+    )
