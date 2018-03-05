@@ -9,8 +9,6 @@ from lark.common import UnexpectedToken
 
 from quippy.parser import quipper_parser
 
-ADDER_FILE = Path("resources") / "optimizer" / "Arithmetic_and_Toffoli" / "adder_8_before"
-
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +20,7 @@ class TestParser(TestCase):
         parsed = parser.parse(basic_text)
         self.assertEqual(Tree('arity', [
             Tree('type_assignment', [
-                Tree('int', ['0']),
+                Tree('wire', [Tree('int', ['0'])]),
                 'Qbit'
                 ]),
             ]), parsed)
@@ -36,21 +34,21 @@ class TestParser(TestCase):
         self.assertEqual(Tree('circuit', [
             Tree('arity', [
                 Tree('type_assignment', [
-                    Tree('int', ['0']),
+                    Tree('wire', [Tree('int', ['0'])]),
                     'Qbit'
                     ]),
                 Tree('type_assignment', [
-                    Tree('int', ['1']),
+                    Tree('wire', [Tree('int', ['1'])]),
                     'Cbit'
                     ]),
                 ]),
             Tree('arity', [
                 Tree('type_assignment', [
-                    Tree('int', ['0']),
+                    Tree('wire', [Tree('int', ['0'])]),
                     'Qbit'
                     ]),
                 Tree('type_assignment', [
-                    Tree('int', ['1']),
+                    Tree('wire', [Tree('int', ['1'])]),
                     'Cbit'
                     ]),
                 ])
@@ -63,11 +61,11 @@ class TestParser(TestCase):
         self.assertEqual(Tree('qgate', [
             Tree('string', ['"not"']),
             Tree('inversion', []),
-            Tree('int', ["0"]),
+            Tree('wire', [Tree('int', ["0"])]),
             Tree('control_app', [
-                Tree('int_list', [
-                    Tree('int', ["+2"]),
-                    Tree('int', ["-3"])
+                Tree('wire_list', [
+                    Tree('wire', [Tree('int', ["+2"])]),
+                    Tree('wire', [Tree('int', ["-3"])])
                     ]),
                 "with nocontrol"
                 ])
@@ -105,19 +103,19 @@ class TestParser(TestCase):
             Tree('string', ['"SP"']),
             Tree('string', ['"([Q,Q,Q],())"']),
             Tree('inversion', []),
-            Tree('int_list', [
-                Tree('int', ["3"]),
-                Tree('int', ["4"]),
-                Tree('int', ["5"])
+            Tree('wire_list', [
+                Tree('wire', [Tree('int', ["3"])]),
+                Tree('wire', [Tree('int', ["4"])]),
+                Tree('wire', [Tree('int', ["5"])])
                 ]),
-            Tree('int_list', [
-                Tree('int', ["0"]),
-                Tree('int', ["1"]),
-                Tree('int', ["2"])
+            Tree('wire_list', [
+                Tree('wire', [Tree('int', ["0"])]),
+                Tree('wire', [Tree('int', ["1"])]),
+                Tree('wire', [Tree('int', ["2"])])
                 ]),
             Tree('control_app', [
-                Tree('int_list', [
-                    Tree('int', ["+5"])
+                Tree('wire_list', [
+                    Tree('wire', [Tree('int', ["+5"])])
                     ]),
                 "with nocontrol"
                 ])
@@ -132,15 +130,15 @@ class TestParser(TestCase):
             Tree('string', ['"SP"']),
             Tree('string', ['"([Q,Q,Q],())"']),
             Tree('inversion', []),
-            Tree('int_list', [
-                Tree('int', ["3"]),
-                Tree('int', ["4"]),
-                Tree('int', ["5"])
+            Tree('wire_list', [
+                Tree('wire', [Tree('int', ["3"])]),
+                Tree('wire', [Tree('int', ["4"])]),
+                Tree('wire', [Tree('int', ["5"])])
                 ]),
-            Tree('int_list', [
-                Tree('int', ["0"]),
-                Tree('int', ["1"]),
-                Tree('int', ["2"])
+            Tree('wire_list', [
+                Tree('wire', [Tree('int', ["0"])]),
+                Tree('wire', [Tree('int', ["1"])]),
+                Tree('wire', [Tree('int', ["2"])])
                 ]),
             Tree('control_app', [])
             ]), parsed)
@@ -162,19 +160,19 @@ class TestParser(TestCase):
         circuit_tree = Tree('circuit', [
             Tree('arity', [
                 Tree('type_assignment', [
-                    Tree('int', ['0']),
+                    Tree('wire', [Tree('int', ['0'])]),
                     'Qbit'
                     ])
                 ]),
             Tree('qgate', [
                 Tree('string', ['"H"']),
                 Tree('inversion', ['*']),
-                Tree('int', ['0']),
+                Tree('wire', [Tree('int', ['0'])]),
                 Tree('control_app', [
-                    Tree('int_list', [
-                        Tree('int', ['+3']),
-                        Tree('int', ['-5']),
-                        Tree('int', ['-6'])
+                    Tree('wire_list', [
+                        Tree('wire', [Tree('int', ['+3'])]),
+                        Tree('wire', [Tree('int', ['-5'])]),
+                        Tree('wire', [Tree('int', ['-6'])])
                         ]),
                     'with nocontrol'
                     ])
@@ -182,11 +180,11 @@ class TestParser(TestCase):
             Tree('qrot', [
                 Tree('string', ['"bla"']),
                 Tree('float', ['1e-05']),
-                Tree('int', ['1'])
+                Tree('wire', [Tree('int', ['1'])])
                 ]),
             Tree('arity', [
                 Tree('type_assignment', [
-                    Tree('int', ['0']),
+                    Tree('wire', [Tree('int', ['0'])]),
                     'Qbit'
                     ])
                 ]),

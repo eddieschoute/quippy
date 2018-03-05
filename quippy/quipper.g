@@ -12,13 +12,13 @@ SUB_CONTROL : "yes"
 // Note: Trailing comma is allowed to parse all example inputs (it is erroneous)
 // See also: https://github.com/njross/optimizer/issues/1
 arity : type_assignment ("," type_assignment)* ","? _NEWLINE
-type_assignment : int ":" TYPE
+type_assignment : wire ":" TYPE
 TYPE: "Qbit"
     | "Cbit"
 
 // Gate control
 control_app : controlled? NO_CONTROL?
-?controlled : "with controls=[" int_list "]"
+?controlled : "with controls=[" wire_list "]"
 NO_CONTROL : "with nocontrol"
 
 // All gates
@@ -43,8 +43,8 @@ NO_CONTROL : "with nocontrol"
 
 // Gate definitions
 !inversion  : "*"? // Make sure the token does not get lost.
-qgate       : "QGate[" string "]" inversion "(" int ")" control_app
-qrot        : "QRot[" string "," float "]" "(" int ")"
+qgate       : "QGate[" string "]" inversion "(" wire ")" control_app
+qrot        : "QRot[" string "," float "]" "(" wire ")"
 gphase      : "Gphase() with t=" float control_app "with anchors=[" wire_list "]"
 cnot        : "CNot(" wire ")" control_app
 cgate       : "CGate[" string "]" inversion "(" wire_list ")" NO_CONTROL?
@@ -65,12 +65,10 @@ qdiscard    : "QDiscard(" wire ")"
 cdiscard    : "CDiscard(" wire ")"
 dterm       : DTERM_STATE "(" wire ")"
 DTERM_STATE : "DTerm0" | "DTerm1"
-subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" inversion "(" int_list ") -> (" int_list ")" control_app
+subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" inversion "(" wire_list ") -> (" wire_list ")" control_app
 // Note: ] and ( have to be separate tokens for the lexer.
 comment : "Comment[" string "]" "(" wire_string_list ")"
 wire_string_list: wire ":" string ("," wire ":" string)*
-
-int_list : int ("," int)*
 
 // Wires are represented as integers.
 wire : int
