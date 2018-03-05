@@ -35,7 +35,7 @@ class TestTransformer(TestCase):
         """
         parser = self.parser(start='arity')
         parsed = parser.parse(basic_text)
-        self.assertEqual([TypeAssignment(wire=0, type=TypeAssignment.Type.Qbit)], parsed)
+        self.assertEqual([TypeAssignment(wire=Wire(0), type=TypeAssignment.Type.Qbit)], parsed)
 
     def test_circuit(self):
         basic_text = """Inputs: 0:Qbit, 1:Cbit
@@ -44,11 +44,11 @@ class TestTransformer(TestCase):
         parser = self.parser(start='circuit')
         parsed = parser.parse(basic_text)
         self.assertEqual(Circuit(
-            inputs=[TypeAssignment(0, TypeAssignment.Type.Qbit),
-                    TypeAssignment(1, TypeAssignment.Type.Cbit)],
+            inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit),
+                    TypeAssignment(Wire(1), TypeAssignment.Type.Cbit)],
             gates=[],
-            outputs=[TypeAssignment(0, TypeAssignment.Type.Qbit),
-                     TypeAssignment(1, TypeAssignment.Type.Cbit)],
+            outputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit),
+                     TypeAssignment(Wire(1), TypeAssignment.Type.Cbit)],
             ), parsed)
 
     def test_qgate(self):
@@ -58,8 +58,8 @@ class TestTransformer(TestCase):
         self.assertEqual(QGate(
             name="not",
             inverted=False,
-            wire=0,
-            control=Control(controlled=[2, -3], no_control=True)
+            wire=Wire(0),
+            control=Control(controlled=[Wire(2), Wire(-3)], no_control=True)
             ), parsed)
 
     def test_statement_comment(self):
