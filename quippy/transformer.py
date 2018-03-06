@@ -33,9 +33,10 @@ class QuipperTransformer(Transformer):
         return Wire(t[0])
 
     wire_list = list
+
     def wire_string_list(self, t):
-        wires = (el for i, el in enumerate(t) if i%2 == 0)
-        labels = (el for i, el in enumerate(t) if i%2 == 1)
+        wires = (el for i, el in enumerate(t) if i % 2 == 0)
+        labels = (el for i, el in enumerate(t) if i % 2 == 1)
         return list(zip(wires, labels))
 
     def type_assignment(self, t):
@@ -72,7 +73,6 @@ class QuipperTransformer(Transformer):
 
     def comment(self, t):
         return Comment(*t)
-
 
     def control_app(self, t):
         if not t:
@@ -114,7 +114,6 @@ class Control(NamedTuple):
     no_control: bool
 
 
-
 class TypeAssignment(NamedTuple):
     class Type(Enum):
         Qbit = enum.auto()
@@ -122,7 +121,6 @@ class TypeAssignment(NamedTuple):
 
     wire: Wire
     type: Type
-
 
 
 class Gate(NamedTuple):
@@ -141,9 +139,11 @@ class QRot(Gate, NamedTuple):
     timestep: float
     wire: Wire
 
+
 class QInit(Gate, NamedTuple):
     value: bool
     wire: Wire
+
 
 class SubroutineCall(Gate, NamedTuple):
     repetitions: int
@@ -154,9 +154,11 @@ class SubroutineCall(Gate, NamedTuple):
     outputs: List[Wire]
     control: Control
 
+
 class Comment(Gate, NamedTuple):
     comment: str
     wire_comments: List[Tuple[Wire, str]]
+
 
 class Circuit(NamedTuple):
     inputs: List[TypeAssignment]
@@ -174,6 +176,7 @@ class Subroutine(NamedTuple):
     shape: str
     controllable: Control
     circuit: Circuit
+
 
 class Start(NamedTuple):
     circuit: Circuit
