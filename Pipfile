@@ -7,10 +7,15 @@ name = "pypi"
 
 [packages]
 
-tatsu = "~=4.2"
+lark-parser = { git = "https://github.com/erezsh/lark.git" }
 
 
 [dev-packages]
 
+twine = "*"
+readme-renderer = "*"
+
+
 [requires]
+
 python_version = "3.6"
