@@ -9,9 +9,12 @@ name = "pypi"
 
 lark-parser = { git = "https://github.com/erezsh/lark.git" }
 
+
 [dev-packages]
 
 twine = "*"
+readme-renderer = "*"
+
 
 [requires]
 
