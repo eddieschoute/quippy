@@ -27,10 +27,13 @@ logger = logging.getLogger(__name__)
 
 
 class TestParser(TestCase):
+    def parser(self, start='start'):
+        return quipper_parser(start=start, transformer=None)
+
     def test_arity(self):
         basic_text = """0:Qbit
         """
-        parser = quipper_parser(start='arity')
+        parser = self.parser(start='arity')
         parsed = parser.parse(basic_text)
         self.assertEqual(Tree('arity', [
             Tree('type_assignment', [
@@ -43,7 +46,7 @@ class TestParser(TestCase):
         basic_text = """Inputs: 0:Qbit, 1:Cbit
         Outputs: 0:Qbit, 1:Cbit
         """
-        parser = quipper_parser(start='circuit')
+        parser = self.parser(start='circuit')
         parsed = parser.parse(basic_text)
         self.assertEqual(Tree('circuit', [
             Tree('arity', [
@@ -70,7 +73,7 @@ class TestParser(TestCase):
 
     def test_qgate(self):
         text = '''QGate["not"](0) with controls=[+2,-3] with nocontrol'''
-        parser = quipper_parser(start='gate')
+        parser = self.parser(start='gate')
         parsed = parser.parse(text)
         self.assertEqual(Tree('qgate', [
             Tree('string', ['"not"']),
@@ -87,7 +90,7 @@ class TestParser(TestCase):
 
     def test_statement_comment(self):
         basic_text = '''Comment["ENTER: qft_big_endian"](0:"qs[0]", 1:"qs[1]")'''
-        parser = quipper_parser(start='gate')
+        parser = self.parser(start='gate')
         parsed = parser.parse(basic_text)
         self.assertEqual(Tree('comment', [
             Tree('string', ['"ENTER: qft_big_endian"']),
@@ -101,7 +104,7 @@ class TestParser(TestCase):
 
     def test_qinit_gate(self):
         text = '''QInit1(0) with nocontrol'''
-        parser = quipper_parser('gate')
+        parser = self.parser('gate')
         parsed = parser.parse(text)
         self.assertEqual(Tree('qinit', [
             'QInit1',
@@ -111,7 +114,7 @@ class TestParser(TestCase):
 
     def test_sub_call_x1(self):
         text = '''Subroutine["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2) with controls=[+5] with nocontrol'''
-        parser = quipper_parser(start='gate')
+        parser = self.parser(start='gate')
         parsed = parser.parse(text)
         self.assertEqual(Tree('subroutine_call', [
             Tree('string', ['"SP"']),
@@ -137,7 +140,7 @@ class TestParser(TestCase):
 
     def test_sub_call_x154(self):
         text = '''Subroutine(x154)["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2)'''
-        parser = quipper_parser(start='gate')
+        parser = self.parser(start='gate')
         parsed = parser.parse(text)
         self.assertEqual(Tree('subroutine_call', [
             Tree('int', ["154"]),
@@ -167,7 +170,7 @@ class TestParser(TestCase):
         QRot["bla", 1e-05](1)
         Outputs: 0:Qbit
         '''
-        parser = quipper_parser(start='subroutine')
+        parser = self.parser(start='subroutine')
         parsed = parser.parse(text)
         # Break the equality check into two steps because it is too big.
         circuit = parsed.children[3]
@@ -219,7 +222,7 @@ class TestParser(TestCase):
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',
                                map(lambda s: Path(s), optimizer_files))
-        parser = quipper_parser()
+        parser = self.parser()
         for path in quipper_paths:
             print(path)
             with open(path) as quipper_file:
@@ -243,7 +246,7 @@ class TestParser(TestCase):
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',
                                map(lambda s: Path(s), simcount_files))
-        parser = quipper_parser()
+        parser = self.parser()
         for path in quipper_paths:
             print(path)
             with open(path) as quipper_file:
