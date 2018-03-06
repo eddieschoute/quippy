@@ -72,7 +72,7 @@ setup(
 
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email='private',  # Optional
+    author_email='notprovided@example.example',  # Optional
 
     # Classifiers help users find your project by categorizing it.
     #
@@ -93,7 +93,7 @@ setup(
         'Topic :: Software Development :: Compilers',
 
         # Pick your license as you wish
-        'License :: OSI Approved :: Apache Software License'
+        'License :: OSI Approved :: Apache Software License',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
