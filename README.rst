@@ -6,7 +6,7 @@ Specifically, Quipper can output an ASCII description of the circuit, which can 
 Quippy provides a default parser in quippy.parser that will parse given text as::
 
     import quippy
-    parsed::quippy.Start = quippy.parser().parse(text)
+    parsed:quippy.Start = quippy.parser().parse(text)
 
 The parsed format uses an `quippy.Start` object to represent the Quipper circuit by default.
 This is a nice Object representation of the circuit the `Abstract Syntax Tree`_ is
