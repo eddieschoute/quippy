@@ -50,7 +50,8 @@ class QuipperTransformer(Transformer):
         ops = QGate.Op
         n = t[0]
         op: QGate.Op
-        if n == "not":
+        # "X" is used in simcount.
+        if n == "not" or n == "x" or n == "X":
             op = ops.Not
         elif n == "H":
             op = ops.H
@@ -112,7 +113,11 @@ class QuipperTransformer(Transformer):
             )
 
     def comment(self, t):
-        return Comment(*t)
+        return Comment(
+            comment=t[0],
+            inverted=len(t[1].children) > 0,
+            wire_comments=t[2]
+            )
 
     def control_app(self, t):
         if not t:
@@ -182,7 +187,7 @@ class QGate(Gate, NamedTuple):
         T = enum.auto()  # Clifford T=√S
         E = enum.auto()  # Clifford Clifford /E/ = /H//S/³ω³ gate.
         Omega = enum.auto()  # Scalar ω = exp(iπ/4)
-        V = enum.auto()   # V = √X
+        V = enum.auto()  # V = √X
         Swap = enum.auto()
         W = enum.auto()  # W is self-inverse and diagonalizes the SWAP
         IX = enum.auto()  # iX
@@ -224,6 +229,7 @@ class SubroutineCall(Gate, NamedTuple):
 
 class Comment(Gate, NamedTuple):
     comment: str
+    inverted: bool
     wire_comments: List[Tuple[Wire, str]]
 
 

@@ -81,7 +81,7 @@ dterm       : DTERM_STATE "(" wire ")"
 DTERM_STATE : "DTerm0" | "DTerm1"
 subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" inversion "(" wire_list ") -> (" wire_list ")" control_app
 // Note: ] and ( have to be separate tokens for the lexer.
-comment : "Comment[" string "]" "(" wire_string_list ")"
+comment : "Comment[" string "]" inversion "(" wire_string_list ")"
 wire_string_list: wire ":" string ("," wire ":" string)*
 
 // Wires are represented as integers.
