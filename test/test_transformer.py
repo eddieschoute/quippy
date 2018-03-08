@@ -213,6 +213,7 @@ class TestTransformer(TestCase):
                     e = sys.exc_info()[0]
                     raise RuntimeError(f"Failed to parse {path}. Error: {e}")
 
+    @unittest.skip
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path("resources") / "simcount"
