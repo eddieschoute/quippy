@@ -47,10 +47,50 @@ class QuipperTransformer(Transformer):
         return list(t)
 
     def qgate(self, t):
-        return QGate(name=t[0], inverted=len(t[1].children) > 0, wire=t[2], control=t[3])
+        ops = QGate.Op
+        n = t[0]
+        op: QGate.Op
+        if n == "not":
+            op = ops.Not
+        elif n == "H":
+            op = ops.H
+        elif n == "multinot":
+            op = ops.MultiNot
+        elif n == "Y":
+            op = ops.Y
+        elif n == "Z":
+            op = ops.Z
+        elif n == "S":
+            op = ops.S
+        elif n == "E":
+            op = ops.E
+        elif n == "T":
+            op = ops.T
+        elif n == "V":
+            op = ops.V
+        elif n == "swap":
+            op = ops.Swap
+        elif n == "omega":
+            op = ops.Omega
+        elif n == "iX":
+            op = ops.IX
+        else:
+            raise RuntimeError(f"Unknown QGate operation: {n}")
+
+        return QGate(op=op, inverted=len(t[1].children) > 0, wire=t[2], control=t[3])
 
     def qrot(self, t):
-        return QRot(*t)
+        ops = QRot.Op
+        n = t[0]
+        op: QRot.Op
+        if n == "exp(-i%Z)":
+            op = ops.ExpZt
+        elif n == "R(2pi/%)":
+            op = ops.R
+        else:
+            raise RuntimeError(f"Unkown QRot operation: {n}")
+
+        return QRot(op=op, timestep=t[1], wire=t[2])
 
     def qinit(self, t):
         return QInit(value=True if t[0] == 'QInit1' else False, wire=t[1])
@@ -128,14 +168,41 @@ class Gate(NamedTuple):
 
 
 class QGate(Gate, NamedTuple):
-    name: str
+    class Op(Enum):
+        """Possible quantum gate operations
+
+            See: Quipper/Monad.hs
+        """
+        Not = enum.auto()  # Pauli X
+        H = enum.auto()  # Hadamard
+        MultiNot = enum.auto()  # Multi-target not
+        Y = enum.auto()  # Pauli Y
+        Z = enum.auto()  # Pauli Z
+        S = enum.auto()  # Clifford S
+        T = enum.auto()  # Clifford T=√S
+        E = enum.auto()  # Clifford Clifford /E/ = /H//S/³ω³ gate.
+        Omega = enum.auto()  # Scalar ω = exp(iπ/4)
+        V = enum.auto()   # V = √X
+        Swap = enum.auto()
+        W = enum.auto()  # W is self-inverse and diagonalizes the SWAP
+        IX = enum.auto()  # iX
+
+    op: Op
     inverted: bool
     wire: Wire
     control: Control
 
 
 class QRot(Gate, NamedTuple):
-    name: str
+    class Op(Enum):
+        """Possible quantum rotation operations
+
+            See: Quipper/Monad.hs
+        """
+        ExpZt = enum.auto()  # Apply an [exp −/iZt/] gate. The timestep /t/ is a parameter.
+        R = enum.auto()  # Apply a rotation by angle 2π/i/\/2[sup /n/] about the /z/-axis.
+
+    op: Op
     timestep: float
     wire: Wire
 

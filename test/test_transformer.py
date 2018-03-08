@@ -56,7 +56,7 @@ class TestTransformer(TestCase):
         parser = self.parser(start='gate')
         parsed = parser.parse(text)
         self.assertEqual(QGate(
-            name="not",
+            op=QGate.Op.Not,
             inverted=False,
             wire=Wire(0),
             control=Control(controlled=[Wire(2), Wire(-3)], no_control=True)
@@ -115,7 +115,7 @@ class TestTransformer(TestCase):
         Controllable: yes
         Inputs: 0:Qbit
         QGate["H"]*(0) with controls=[+3,-5, -6] with nocontrol
-        QRot["bla", 1e-05](1)
+        QRot["exp(-i%Z)", 1e-05](1)
         Outputs: 0:Qbit
         '''
         parser = self.parser(start='subroutine')
@@ -126,7 +126,7 @@ class TestTransformer(TestCase):
             inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)],
             gates=[
                 QGate(
-                    name="H",
+                    op=QGate.Op.H,
                     inverted=True,
                     wire=Wire(0),
                     control=Control(
@@ -139,7 +139,7 @@ class TestTransformer(TestCase):
                         )
                     ),
                 QRot(
-                    name="bla",
+                    op=QRot.Op.ExpZt,
                     timestep=1e-05,
                     wire=Wire(1)
                     )
@@ -157,7 +157,7 @@ class TestTransformer(TestCase):
     def test_start(self):
         text = '''Inputs: 0:Qbit
         QGate["H"]*(0) with controls=[+3,-5, -6] with nocontrol
-        QRot["bla", 1e-05](1)
+        QRot["exp(-i%Z)", 1e-05](1)
         Outputs: 0:Qbit
         '''
         parser = self.parser()
@@ -167,7 +167,7 @@ class TestTransformer(TestCase):
                 inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)],
                 gates=[
                     QGate(
-                        name="H",
+                        op=QGate.Op.H,
                         inverted=True,
                         wire=Wire(0),
                         control=Control(
@@ -180,7 +180,7 @@ class TestTransformer(TestCase):
                             )
                         ),
                     QRot(
-                        name="bla",
+                        op=QRot.Op.ExpZt,
                         timestep=1e-05,
                         wire=Wire(1)
                         )
