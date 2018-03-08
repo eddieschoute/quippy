@@ -211,9 +211,8 @@ class TestTransformer(TestCase):
                     parser.parse(quipper_file.read())
                 except:
                     e = sys.exc_info()[0]
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
 
-    @unittest.skip
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path("resources") / "simcount"
@@ -229,6 +228,7 @@ class TestTransformer(TestCase):
                                             and path.suffix == '',
                                map(lambda s: Path(s), simcount_files))
         parser = self.parser()
+        success = True
         for path in quipper_paths:
             print(path)
             with open(path) as quipper_file:
@@ -236,4 +236,6 @@ class TestTransformer(TestCase):
                     parser.parse(quipper_file.read())
                 except:
                     e = sys.exc_info()[0]
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
+                    print(f"Failed to parse {path}. Error: {e.message}")
+                    success = False
+        self.fail()

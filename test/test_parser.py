@@ -240,7 +240,7 @@ class TestParser(TestCase):
                 try:
                     parser.parse(quipper_file.read())
                 except UnexpectedToken as e:
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
 
     @unittest.skip
     def test_simcount(self):
@@ -255,7 +255,8 @@ class TestParser(TestCase):
 
         simcount_files = glob.glob(str(simcount_files_path / "**"), recursive=True)
         quipper_paths = filter(lambda path: not path.is_dir()
-                                            and path.suffix == '',
+                                            and path.suffix == ''
+                                            and path.name != "LICENSE",
                                map(lambda s: Path(s), simcount_files))
         parser = self.parser()
         for path in quipper_paths:
@@ -264,4 +265,4 @@ class TestParser(TestCase):
                 try:
                     parser.parse(quipper_file.read())
                 except UnexpectedToken as e:
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e}")
+                    raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
