@@ -91,7 +91,12 @@ class QuipperTransformer(Transformer):
         else:
             raise RuntimeError(f"Unkown QRot operation: {n}")
 
-        return QRot(op=op, timestep=t[1], wire=t[2])
+        return QRot(
+            op=op,
+            timestep=t[1],
+            inverted=len(t[2].children) > 0,
+            wire=t[3]
+            )
 
     def qinit(self, t):
         return QInit(value=True if t[0] == 'QInit1' else False, wire=t[1])
@@ -113,10 +118,12 @@ class QuipperTransformer(Transformer):
             )
 
     def comment(self, t):
+        wire_comments = t[2] if len(t) > 2 else None
+
         return Comment(
             comment=t[0],
             inverted=len(t[1].children) > 0,
-            wire_comments=t[2]
+            wire_comments=wire_comments
             )
 
     def control_app(self, t):
@@ -208,6 +215,7 @@ class QRot(Gate, NamedTuple):
         R = enum.auto()  # Apply a rotation by angle 2π/i/\/2[sup /n/] about the /z/-axis.
 
     op: Op
+    inverted: bool
     timestep: float
     wire: Wire
 

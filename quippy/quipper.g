@@ -56,9 +56,10 @@ NO_CONTROL : "with nocontrol"
     | comment
 
 // Gate definitions
+// Note: ] and ( have to be separate tokens for the lexer.
 !inversion  : "*"? // Make sure the token does not get lost.
 qgate       : "QGate[" string "]" inversion "(" wire ")" control_app
-qrot        : "QRot[" string "," float "]" "(" wire ")"
+qrot        : "QRot[" string "," float "]" inversion "(" wire ")"
 gphase      : "Gphase() with t=" float control_app "with anchors=[" wire_list "]"
 cnot        : "CNot(" wire ")" control_app
 cgate       : "CGate[" string "]" inversion "(" wire_list ")" NO_CONTROL?
@@ -80,8 +81,7 @@ cdiscard    : "CDiscard(" wire ")"
 dterm       : DTERM_STATE "(" wire ")"
 DTERM_STATE : "DTerm0" | "DTerm1"
 subroutine_call : "Subroutine" ["(x" int ")"] "[" string ", shape" string "]" inversion "(" wire_list ") -> (" wire_list ")" control_app
-// Note: ] and ( have to be separate tokens for the lexer.
-comment : "Comment[" string "]" inversion "(" wire_string_list ")"
+comment : "Comment[" string "]" inversion "(" wire_string_list? ")"
 wire_string_list: wire ":" string ("," wire ":" string)*
 
 // Wires are represented as integers.

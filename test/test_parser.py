@@ -94,12 +94,22 @@ class TestParser(TestCase):
         parsed = parser.parse(basic_text)
         self.assertEqual(Tree('comment', [
             Tree('string', ['"ENTER: qft_big_endian"']),
+            Tree('inversion', []),
             Tree('wire_string_list', [
                 Tree('wire', [Tree('int', ['0'])]),
                 Tree('string', ['"qs[0]"']),
                 Tree('wire', [Tree('int', ['1'])]),
                 Tree('string', ['"qs[1]"'])
                 ])
+            ]), parsed)
+
+    def test_statement_comment_empty(self):
+        basic_text = '''Comment["ENTER: qft_big_endian"]()'''
+        parser = self.parser(start='gate')
+        parsed = parser.parse(basic_text)
+        self.assertEqual(Tree('comment', [
+            Tree('string', ['"ENTER: qft_big_endian"']),
+            Tree('inversion', [])
             ]), parsed)
 
     def test_qinit_gate(self):
@@ -197,6 +207,7 @@ class TestParser(TestCase):
             Tree('qrot', [
                 Tree('string', ['"bla"']),
                 Tree('float', ['1e-05']),
+                Tree('inversion', []),
                 Tree('wire', [Tree('int', ['1'])])
                 ]),
             Tree('arity', [

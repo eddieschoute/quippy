@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import glob
 import logging
 from pathlib import Path
@@ -68,6 +69,7 @@ class TestTransformer(TestCase):
         parsed = parser.parse(basic_text)
         self.assertEqual(Comment(
             comment="ENTER: qft_big_endian",
+            inverted=False,
             wire_comments=[
                 (Wire(i=0), "qs[0]"),
                 (Wire(i=1), "qs[1]")
@@ -141,6 +143,7 @@ class TestTransformer(TestCase):
                 QRot(
                     op=QRot.Op.ExpZt,
                     timestep=1e-05,
+                    inverted=False,
                     wire=Wire(1)
                     )
                 ],
@@ -182,6 +185,7 @@ class TestTransformer(TestCase):
                     QRot(
                         op=QRot.Op.ExpZt,
                         timestep=1e-05,
+                        inverted=False,
                         wire=Wire(1)
                         )
                     ],
@@ -199,16 +203,16 @@ class TestTransformer(TestCase):
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',
                                map(lambda s: Path(s), optimizer_files))
-        parser = quipper_parser()
+        parser = self.parser()
         for path in quipper_paths:
             print(path)
             with open(path) as quipper_file:
                 try:
-                    self.parser().parse(quipper_file.read())
-                except UnexpectedToken as e:
+                    parser.parse(quipper_file.read())
+                except:
+                    e = sys.exc_info()[0]
                     raise RuntimeError(f"Failed to parse {path}. Error: {e}")
 
-    @unittest.skip
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path("resources") / "simcount"
@@ -223,11 +227,12 @@ class TestTransformer(TestCase):
         quipper_paths = filter(lambda path: not path.is_dir()
                                             and path.suffix == '',
                                map(lambda s: Path(s), simcount_files))
-        parser = quipper_parser()
+        parser = self.parser()
         for path in quipper_paths:
             print(path)
             with open(path) as quipper_file:
                 try:
-                    self.parser().parse(quipper_file.read())
-                except UnexpectedToken as e:
+                    parser.parse(quipper_file.read())
+                except:
+                    e = sys.exc_info()[0]
                     raise RuntimeError(f"Failed to parse {path}. Error: {e}")
