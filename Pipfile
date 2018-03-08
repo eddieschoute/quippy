@@ -7,7 +7,7 @@ name = "pypi"
 
 [packages]
 
-lark-parser = { git = "https://github.com/erezsh/lark.git" }
+lark-parser = "*"
 
 
 [dev-packages]

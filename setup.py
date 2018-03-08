@@ -127,7 +127,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'lark-parser>=0.5.4,<0.6'
+        'lark-parser>=0.5.5,<0.6'
         ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
