@@ -93,7 +93,7 @@ wire_list : wire ("," wire)*
 %ignore WS
 %import common.CR
 %import common.LF
-_NEWLINE: (CR? LF)  // Only match a single newline
+_NEWLINE: CR? LF  // Only match a single newline
 %import common.ESCAPED_STRING
 string: ESCAPED_STRING
 %import common.SIGNED_FLOAT
