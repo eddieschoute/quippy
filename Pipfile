@@ -6,16 +6,9 @@ name = "pypi"
 
 
 [packages]
-
 lark-parser = "*"
 
 
 [dev-packages]
-
 twine = "*"
 readme-renderer = "*"
-
-
-[requires]
-
-python_version = "3.6"
