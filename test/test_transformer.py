@@ -36,7 +36,7 @@ class TestTransformer(TestCase):
         """
         parser = self.parser(start='arity')
         parsed = parser.parse(basic_text)
-        self.assertEqual([TypeAssignment(wire=Wire(0), type=TypeAssignment.Type.Qbit)], parsed)
+        self.assertEqual([TypeAssignment(wire=Wire(0), type=TypeAssignment_Type.Qbit)], parsed)
 
     def test_circuit(self):
         basic_text = """Inputs: 0:Qbit, 1:Cbit
@@ -45,11 +45,11 @@ class TestTransformer(TestCase):
         parser = self.parser(start='circuit')
         parsed = parser.parse(basic_text)
         self.assertEqual(Circuit(
-            inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit),
-                    TypeAssignment(Wire(1), TypeAssignment.Type.Cbit)],
+            inputs=[TypeAssignment(Wire(0), TypeAssignment_Type.Qbit),
+                    TypeAssignment(Wire(1), TypeAssignment_Type.Cbit)],
             gates=[],
-            outputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit),
-                     TypeAssignment(Wire(1), TypeAssignment.Type.Cbit)],
+            outputs=[TypeAssignment(Wire(0), TypeAssignment_Type.Qbit),
+                     TypeAssignment(Wire(1), TypeAssignment_Type.Cbit)],
             ), parsed)
 
     def test_qgate(self):
@@ -57,7 +57,7 @@ class TestTransformer(TestCase):
         parser = self.parser(start='gate')
         parsed = parser.parse(text)
         self.assertEqual(QGate(
-            op=QGate.Op.Not,
+            op=QGate_Op.Not,
             inverted=False,
             wire=Wire(0),
             control=Control(controlled=[Wire(2), Wire(-3)], no_control=True)
@@ -121,14 +121,14 @@ class TestTransformer(TestCase):
         Outputs: 0:Qbit
         '''
         parser = self.parser(start='subroutine')
-        parsed: Subroutine = parser.parse(text)
+        parsed = parser.parse(text)  # type: Subroutine
         # Break the equality check into two steps because it is too big.
         circuit = parsed.circuit
         expected_circuit = Circuit(
-            inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)],
+            inputs=[TypeAssignment(Wire(0), TypeAssignment_Type.Qbit)],
             gates=[
                 QGate(
-                    op=QGate.Op.H,
+                    op=QGate_Op.H,
                     inverted=True,
                     wire=Wire(0),
                     control=Control(
@@ -141,19 +141,19 @@ class TestTransformer(TestCase):
                         )
                     ),
                 QRot(
-                    op=QRot.Op.ExpZt,
+                    op=QRot_Op.ExpZt,
                     timestep=1e-05,
                     inverted=False,
                     wire=Wire(1)
                     )
                 ],
-            outputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)]
+            outputs=[TypeAssignment(Wire(0), TypeAssignment_Type.Qbit)]
             )
         self.assertEqual(expected_circuit, circuit)
         self.assertEqual(Subroutine(
             name="S1",
             shape="([Q],())",
-            controllable=Subroutine.Control.yes,
+            controllable=Subroutine_Control.yes,
             circuit=expected_circuit
             ), parsed)
 
@@ -164,13 +164,13 @@ class TestTransformer(TestCase):
         Outputs: 0:Qbit
         '''
         parser = self.parser()
-        parsed: Subroutine = parser.parse(text)
+        parsed = parser.parse(text)  # type: Subroutine
         expected_start = Start(
             circuit=Circuit(
-                inputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)],
+                inputs=[TypeAssignment(Wire(0), TypeAssignment_Type.Qbit)],
                 gates=[
                     QGate(
-                        op=QGate.Op.H,
+                        op=QGate_Op.H,
                         inverted=True,
                         wire=Wire(0),
                         control=Control(
@@ -183,13 +183,13 @@ class TestTransformer(TestCase):
                             )
                         ),
                     QRot(
-                        op=QRot.Op.ExpZt,
+                        op=QRot_Op.ExpZt,
                         timestep=1e-05,
                         inverted=False,
                         wire=Wire(1)
                         )
                     ],
-                outputs=[TypeAssignment(Wire(0), TypeAssignment.Type.Qbit)]
+                outputs=[TypeAssignment(Wire(0), TypeAssignment_Type.Qbit)]
                 ),
             subroutines=[]
             )
@@ -199,7 +199,7 @@ class TestTransformer(TestCase):
         """Try to parse all files in the optimizer resource folder."""
         pf6_30_before = Path(__file__).parents[1] / "resources" / "optimizer" / "PF" / "pf6_30_before"
         parser = self.parser()
-        with open(pf6_30_before) as quipper_file:
+        with open(str(pf6_30_before)) as quipper_file:
             try:
                 parser.parse(quipper_file.read())
             except:
@@ -210,7 +210,7 @@ class TestTransformer(TestCase):
         """Try to parse pf6_100 in the optimizer resource folder."""
         pf6_100_before = Path(__file__).parents[1] / "resources" / "optimizer" / "PF" / "pf6_100_before"
         parser = self.parser()
-        with open(pf6_100_before) as quipper_file:
+        with open(str(pf6_100_before), 'r') as quipper_file:
             try:
                 parser.parse(quipper_file.read())
             except:
@@ -228,7 +228,7 @@ class TestTransformer(TestCase):
         parser = self.parser()
         for path in quipper_paths:
             print(path)
-            with open(path) as quipper_file:
+            with open(str(path)) as quipper_file:
                 try:
                     parser.parse(quipper_file.read())
                 except:
@@ -254,7 +254,7 @@ class TestTransformer(TestCase):
         success = True
         for path in quipper_paths:
             print(path)
-            with open(path) as quipper_file:
+            with open(str(path)) as quipper_file:
                 try:
                     parser.parse(quipper_file.read())
                 except:

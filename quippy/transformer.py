@@ -40,16 +40,16 @@ class QuipperTransformer(Transformer):
         return list(zip(wires, labels))
 
     def type_assignment(self, t):
-        ty = TypeAssignment.Type.Qbit if t[1] == 'Qbit' else TypeAssignment.Type.Cbit
+        ty = TypeAssignment_Type.Qbit if t[1] == 'Qbit' else TypeAssignment_Type.Cbit
         return TypeAssignment(t[0], ty)
 
     def arity(self, t):
         return list(t)
 
     def qgate(self, t):
-        ops = QGate.Op
+        ops = QGate_Op
         n = t[0]
-        op: QGate.Op
+        op = None  # type: QGate_Op
         # "X" is used in simcount.
         if n == "not" or n == "x" or n == "X":
             op = ops.Not
@@ -81,9 +81,9 @@ class QuipperTransformer(Transformer):
         return QGate(op=op, inverted=len(t[1].children) > 0, wire=t[2], control=t[3])
 
     def qrot(self, t):
-        ops = QRot.Op
+        ops = QRot_Op
         n = t[0]
-        op: QRot.Op
+        op = None  # type: QRot.Op
         if n == "exp(-i%Z)":
             op = ops.ExpZt
         elif n == "R(2pi/%)":
@@ -142,13 +142,13 @@ class QuipperTransformer(Transformer):
         return Circuit(inputs=t[0], gates=t[1:-1], outputs=t[-1])
 
     def subroutine(self, t):
-        controllable: Subroutine.Control
+        controllable = None  # type: Subroutine.Control
         if t[2] == "yes":
-            controllable = Subroutine.Control.yes
+            controllable = Subroutine_Control.yes
         elif t[2] == "no":
-            controllable = Subroutine.Control.no
+            controllable = Subroutine_Control.no
         else:
-            controllable = Subroutine.Control.classically
+            controllable = Subroutine_Control.classically
 
         return Subroutine(name=t[0], shape=t[1], controllable=controllable, circuit=t[3])
 
@@ -157,108 +157,120 @@ class QuipperTransformer(Transformer):
         return Start(circuit, list(t))
 
 
-class Wire(NamedTuple):
-    i: int
+Wire = NamedTuple('Wire', [
+    ('i', int)
+    ])
 
+Control = NamedTuple('Control',[
+    ('controlled', List[Wire]),
+    ('no_control', bool)
+    ])
 
-class Control(NamedTuple):
-    controlled: List[Wire]
-    no_control: bool
+@enum.unique
+class TypeAssignment_Type(Enum):
+    Qbit = 1
+    Cbit = 2
 
+TypeAssignment = NamedTuple('TypeAssignment', [
+    ('wire', int),
+    ('type', TypeAssignment_Type)
+    ])
 
-class TypeAssignment(NamedTuple):
-    class Type(Enum):
-        Qbit = enum.auto()
-        Cbit = enum.auto()
+class Gate:
+    pass
 
-    wire: Wire
-    type: Type
+@enum.unique
+class QGate_Op(Enum):
+    """Possible quantum gate operations
 
+        See: Quipper/Monad.hs
+    """
+    Not = 1  # Pauli X
+    H = 2  # Hadamard
+    MultiNot = 3  # Multi-target not
+    Y = 4  # Pauli Y
+    Z = 5  # Pauli Z
+    S = 6  # Clifford S
+    T = 7  # Clifford T=√S
+    E = 8  # Clifford Clifford /E/ = /H//S/³ω³ gate.
+    Omega = 9  # Scalar ω = exp(iπ/4)
+    V = 10  # V = √X
+    Swap = 11
+    W = 12  # W is self-inverse and diagonalizes the SWAP
+    IX = 13  # iX
 
-class Gate(NamedTuple):
+class QGate(Gate, NamedTuple('QGate', [
+    ('op', QGate_Op),
+    ('inverted', bool),
+    ('wire', Wire),
+    ('control', Control)
+    ])):
+    pass
+
+@enum.unique
+class QRot_Op(Enum):
+    """Possible quantum rotation operations
+
+        See: Quipper/Monad.hs
+    """
+    ExpZt = 1  # Apply an [exp −/iZt/] gate. The timestep /t/ is a parameter.
+    R = 2  # Apply a rotation by angle 2π/i/\/2[sup /n/] about the /z/-axis.
+
+class QRot(Gate, NamedTuple('QRot',[
+    ('op', QRot_Op),
+    ('inverted', bool),
+    ('timestep', float),
+    ('wire', Wire)
+    ])):
     pass
 
 
-class QGate(Gate, NamedTuple):
-    class Op(Enum):
-        """Possible quantum gate operations
-
-            See: Quipper/Monad.hs
-        """
-        Not = enum.auto()  # Pauli X
-        H = enum.auto()  # Hadamard
-        MultiNot = enum.auto()  # Multi-target not
-        Y = enum.auto()  # Pauli Y
-        Z = enum.auto()  # Pauli Z
-        S = enum.auto()  # Clifford S
-        T = enum.auto()  # Clifford T=√S
-        E = enum.auto()  # Clifford Clifford /E/ = /H//S/³ω³ gate.
-        Omega = enum.auto()  # Scalar ω = exp(iπ/4)
-        V = enum.auto()  # V = √X
-        Swap = enum.auto()
-        W = enum.auto()  # W is self-inverse and diagonalizes the SWAP
-        IX = enum.auto()  # iX
-
-    op: Op
-    inverted: bool
-    wire: Wire
-    control: Control
+class QInit(Gate, NamedTuple("QInit", [
+    ("value", bool),
+    ("wire", Wire)
+    ])):
+    pass
 
 
-class QRot(Gate, NamedTuple):
-    class Op(Enum):
-        """Possible quantum rotation operations
-
-            See: Quipper/Monad.hs
-        """
-        ExpZt = enum.auto()  # Apply an [exp −/iZt/] gate. The timestep /t/ is a parameter.
-        R = enum.auto()  # Apply a rotation by angle 2π/i/\/2[sup /n/] about the /z/-axis.
-
-    op: Op
-    inverted: bool
-    timestep: float
-    wire: Wire
+class SubroutineCall(Gate, NamedTuple("SubroutineCall", [
+    ("repetitions", int),
+    ("name", str),
+    ("shape", str),
+    ("inverted", bool),
+    ("inputs", List[Wire]),
+    ("outputs", List[Wire]),
+    ("control", Control)
+    ])):
+    pass
 
 
-class QInit(Gate, NamedTuple):
-    value: bool
-    wire: Wire
+class Comment(Gate, NamedTuple("Comment", [
+    ("comment", str),
+    ("inverted", bool),
+    ("wire_comments", List[Tuple[Wire, str]])
+    ])):
+    pass
 
+Circuit = NamedTuple("Circuit",[
+    ("inputs", List[TypeAssignment]),
+    ("gates", List[Gate]),
+    ("outputs", List[TypeAssignment])
+    ])
 
-class SubroutineCall(Gate, NamedTuple):
-    repetitions: int
-    name: str
-    shape: str
-    inverted: bool
-    inputs: List[Wire]
-    outputs: List[Wire]
-    control: Control
+@enum.unique
+class Subroutine_Control(Enum):
+    yes = 1
+    no = 2
+    classically = 3
 
+Subroutine = NamedTuple("Subroutine", [
+    ("name", str),
+    ("shape", str),
+    ("controllable", Subroutine_Control),
+    ("circuit", Circuit)
+    ])
 
-class Comment(Gate, NamedTuple):
-    comment: str
-    inverted: bool
-    wire_comments: List[Tuple[Wire, str]]
-
-
-class Circuit(NamedTuple):
-    inputs: List[TypeAssignment]
-    gates: List[Gate]
-    outputs: List[TypeAssignment]
-
-
-class Subroutine(NamedTuple):
-    class Control(Enum):
-        yes = enum.auto()
-        no = enum.auto()
-        classically = enum.auto()
-
-    name: str
-    shape: str
-    controllable: Control
-    circuit: Circuit
-
-
-class Start(NamedTuple):
-    circuit: Circuit
-    subroutines: List[Subroutine]
+Start = NamedTuple("Start", [
+    ("circuit", Circuit),
+    ("subroutines", List[Subroutine])
+    ])
