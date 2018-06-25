@@ -217,7 +217,7 @@ class TestTransformer(TestCase):
                 e = sys.exc_info()[0]
                 raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
 
-    @unittest.skip
+    @unittest.skip("Long test")
     def test_optimizer(self):
         """Try to parse all files in the optimizer resource folder."""
         optimizer_files_path = Path(__file__).parents[1] / "resources" / "optimizer" / "**"
@@ -235,7 +235,7 @@ class TestTransformer(TestCase):
                     e = sys.exc_info()[0]
                     raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
 
-    @unittest.skip
+    @unittest.skip("Long test")
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path("resources") / "simcount"
