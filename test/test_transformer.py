@@ -195,6 +195,28 @@ class TestTransformer(TestCase):
             )
         self.assertEqual(expected_start, parsed)
 
+    def test_optimizer_pf6_30_before(self):
+        """Try to parse all files in the optimizer resource folder."""
+        pf6_30_before = Path(__file__).parents[1] / "resources" / "optimizer" / "PF" / "pf6_30_before"
+        parser = self.parser()
+        with open(pf6_30_before) as quipper_file:
+            try:
+                parser.parse(quipper_file.read())
+            except:
+                e = sys.exc_info()[0]
+                raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+
+    def test_optimizer_pf6_100_before(self):
+        """Try to parse pf6_100 in the optimizer resource folder."""
+        pf6_100_before = Path(__file__).parents[1] / "resources" / "optimizer" / "PF" / "pf6_100_before"
+        parser = self.parser()
+        with open(pf6_100_before) as quipper_file:
+            try:
+                parser.parse(quipper_file.read())
+            except:
+                e = sys.exc_info()[0]
+                raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+
     @unittest.skip
     def test_optimizer(self):
         """Try to parse all files in the optimizer resource folder."""
@@ -213,6 +235,7 @@ class TestTransformer(TestCase):
                     e = sys.exc_info()[0]
                     raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
 
+    @unittest.skip
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path("resources") / "simcount"
