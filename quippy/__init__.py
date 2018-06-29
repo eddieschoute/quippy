@@ -15,8 +15,10 @@
 """Quippy is a parser library for parsing Quipper ASCII quantum circuit descriptions."""
 
 from quippy.parser import quipper_parser as parser
-from quippy.transformer import Wire, Control, TypeAssignment, Gate, QGate, QRot, QInit, \
-    SubroutineCall, Comment, Circuit, Subroutine, Start
+from quippy.transformer import Wire, Control, TypeAssignment_Type, TypeAssignment, Gate, QGate_Op, \
+    QGate, QRot_Op, QRot, QInit, SubroutineCall, Comment, Circuit, Subroutine_Control, Subroutine, \
+    Start
 
-__all__ = [parser, Wire, Control, TypeAssignment, Gate, QGate, QRot, QInit, SubroutineCall,
-           Comment, Circuit, Subroutine, Start]
+__all__ = [parser, Wire, Control, TypeAssignment_Type, TypeAssignment, Gate, QGate_Op, QGate,
+           QRot_Op, QRot, QInit, SubroutineCall, Comment, Circuit, Subroutine_Control, Subroutine,
+           Start]

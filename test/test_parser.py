@@ -240,7 +240,7 @@ class TestParser(TestCase):
                 try:
                     parser.parse(quipper_file.read())
                 except UnexpectedToken as e:
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+                    raise RuntimeError("Failed to parse {}. Error: {}".format(path, e.message))
 
     @unittest.skip
     def test_simcount(self):
@@ -261,8 +261,8 @@ class TestParser(TestCase):
         parser = self.parser()
         for path in quipper_paths:
             print(path)
-            with open(path) as quipper_file:
+            with open(str(path), 'r') as quipper_file:
                 try:
                     parser.parse(quipper_file.read())
                 except UnexpectedToken as e:
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+                    raise RuntimeError("Failed to parse {}. Error: {}".format(path, e.message))

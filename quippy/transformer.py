@@ -76,7 +76,7 @@ class QuipperTransformer(Transformer):
         elif n == "iX":
             op = ops.IX
         else:
-            raise RuntimeError(f"Unknown QGate operation: {n}")
+            raise RuntimeError("Unknown QGate operation: {}".format(n))
 
         return QGate(op=op, inverted=len(t[1].children) > 0, wire=t[2], control=t[3])
 
@@ -89,7 +89,7 @@ class QuipperTransformer(Transformer):
         elif n == "R(2pi/%)":
             op = ops.R
         else:
-            raise RuntimeError(f"Unkown QRot operation: {n}")
+            raise RuntimeError("Unkown QRot operation: {}".format(n))
 
         return QRot(
             op=op,
@@ -161,23 +161,27 @@ Wire = NamedTuple('Wire', [
     ('i', int)
     ])
 
-Control = NamedTuple('Control',[
+Control = NamedTuple('Control', [
     ('controlled', List[Wire]),
     ('no_control', bool)
     ])
+
 
 @enum.unique
 class TypeAssignment_Type(Enum):
     Qbit = 1
     Cbit = 2
 
+
 TypeAssignment = NamedTuple('TypeAssignment', [
     ('wire', int),
     ('type', TypeAssignment_Type)
     ])
 
+
 class Gate:
     pass
+
 
 @enum.unique
 class QGate_Op(Enum):
@@ -199,6 +203,7 @@ class QGate_Op(Enum):
     W = 12  # W is self-inverse and diagonalizes the SWAP
     IX = 13  # iX
 
+
 class QGate(Gate, NamedTuple('QGate', [
     ('op', QGate_Op),
     ('inverted', bool),
@@ -206,6 +211,7 @@ class QGate(Gate, NamedTuple('QGate', [
     ('control', Control)
     ])):
     pass
+
 
 @enum.unique
 class QRot_Op(Enum):
@@ -216,7 +222,8 @@ class QRot_Op(Enum):
     ExpZt = 1  # Apply an [exp −/iZt/] gate. The timestep /t/ is a parameter.
     R = 2  # Apply a rotation by angle 2π/i/\/2[sup /n/] about the /z/-axis.
 
-class QRot(Gate, NamedTuple('QRot',[
+
+class QRot(Gate, NamedTuple('QRot', [
     ('op', QRot_Op),
     ('inverted', bool),
     ('timestep', float),
@@ -251,17 +258,20 @@ class Comment(Gate, NamedTuple("Comment", [
     ])):
     pass
 
-Circuit = NamedTuple("Circuit",[
+
+Circuit = NamedTuple("Circuit", [
     ("inputs", List[TypeAssignment]),
     ("gates", List[Gate]),
     ("outputs", List[TypeAssignment])
     ])
+
 
 @enum.unique
 class Subroutine_Control(Enum):
     yes = 1
     no = 2
     classically = 3
+
 
 Subroutine = NamedTuple("Subroutine", [
     ("name", str),

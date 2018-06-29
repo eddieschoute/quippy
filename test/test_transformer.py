@@ -204,7 +204,7 @@ class TestTransformer(TestCase):
                 parser.parse(quipper_file.read())
             except:
                 e = sys.exc_info()[0]
-                raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+                raise RuntimeError("Failed to parse {}. Error: {}".format(pf6_30_before, e.message))
 
     def test_optimizer_pf6_100_before(self):
         """Try to parse pf6_100 in the optimizer resource folder."""
@@ -215,7 +215,7 @@ class TestTransformer(TestCase):
                 parser.parse(quipper_file.read())
             except:
                 e = sys.exc_info()[0]
-                raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+                raise RuntimeError("Failed to parse {}. Error: {}".format(pf6_100_before, e.message))
 
     @unittest.skip("Long test")
     def test_optimizer(self):
@@ -233,12 +233,12 @@ class TestTransformer(TestCase):
                     parser.parse(quipper_file.read())
                 except:
                     e = sys.exc_info()[0]
-                    raise RuntimeError(f"Failed to parse {path}. Error: {e.message}")
+                    raise RuntimeError("Failed to parse {}. Error: {}".format(path, e.message))
 
     @unittest.skip("Long test")
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
-        simcount_files_path = Path("resources") / "simcount"
+        simcount_files_path = Path(__file__).parents[1] / "resources" / "simcount"
         if (not simcount_files_path.exists()):
             logger.warning('''simcount resource does not exist, skipping tests!
             Download the resource from https://github.com/njross/simcount/blob/master/samples.tar.gz
@@ -259,6 +259,6 @@ class TestTransformer(TestCase):
                     parser.parse(quipper_file.read())
                 except:
                     e = sys.exc_info()[0]
-                    print(f"Failed to parse {path}. Error: {e.message}")
+                    print("Failed to parse {}. Error: {}".format(path, e.message))
                     success = False
         self.fail()
