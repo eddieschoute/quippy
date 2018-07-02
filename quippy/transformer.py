@@ -174,7 +174,7 @@ class TypeAssignment_Type(Enum):
 
 
 TypeAssignment = NamedTuple('TypeAssignment', [
-    ('wire', int),
+    ('wire', Wire),
     ('type', TypeAssignment_Type)
     ])
 
