@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import glob
 import logging
-from pathlib import Path
+import sys
 import unittest
+from pathlib import Path
 from unittest import TestCase
-
-from lark.common import UnexpectedToken
 
 from quippy.parser import quipper_parser
 from quippy.transformer import *
@@ -81,6 +79,30 @@ class TestTransformer(TestCase):
         parser = self.parser('gate')
         parsed = parser.parse(text)
         self.assertEqual(QInit(value=True, wire=Wire(i=0)), parsed)
+
+    def test_cinit_gate(self):
+        text = '''CInit0(5) with nocontrol'''
+        parser = self.parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(CInit(value=False, wire=Wire(i=5)), parsed)
+
+    def test_qmeas_gate(self):
+        text = '''QMeas(0)'''
+        parser = self.parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(QMeas(wire=Wire(0)), parsed)
+
+    def test_qdiscard_gate(self):
+        text = '''QDiscard(5)'''
+        parser = self.parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(QDiscard(wire=Wire(5)), parsed)
+
+    def test_qdiscard_gate(self):
+        text = '''CDiscard(5)'''
+        parser = self.parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(CDiscard(wire=Wire(5)), parsed)
 
     def test_sub_call_x1(self):
         text = '''Subroutine["SP", shape "([Q,Q,Q],())"] (3,4,5) -> (0,1,2) with controls=[+5] with nocontrol'''
@@ -197,7 +219,8 @@ class TestTransformer(TestCase):
 
     def test_optimizer_pf6_30_before(self):
         """Try to parse all files in the optimizer resource folder."""
-        pf6_30_before = Path(__file__).parents[1] / "resources" / "optimizer" / "PF" / "pf6_30_before"
+        pf6_30_before = Path(__file__).parents[
+                            1] / "resources" / "optimizer" / "PF" / "pf6_30_before"
         parser = self.parser()
         with open(str(pf6_30_before)) as quipper_file:
             try:
@@ -208,14 +231,16 @@ class TestTransformer(TestCase):
 
     def test_optimizer_pf6_100_before(self):
         """Try to parse pf6_100 in the optimizer resource folder."""
-        pf6_100_before = Path(__file__).parents[1] / "resources" / "optimizer" / "PF" / "pf6_100_before"
+        pf6_100_before = Path(__file__).parents[
+                             1] / "resources" / "optimizer" / "PF" / "pf6_100_before"
         parser = self.parser()
         with open(str(pf6_100_before), 'r') as quipper_file:
             try:
                 parser.parse(quipper_file.read())
             except:
                 e = sys.exc_info()[0]
-                raise RuntimeError("Failed to parse {}. Error: {}".format(pf6_100_before, e.message))
+                raise RuntimeError(
+                    "Failed to parse {}. Error: {}".format(pf6_100_before, e.message))
 
     @unittest.skip("Long test")
     def test_optimizer(self):

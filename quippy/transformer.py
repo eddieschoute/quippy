@@ -101,6 +101,18 @@ class QuipperTransformer(Transformer):
     def qinit(self, t):
         return QInit(value=True if t[0] == 'QInit1' else False, wire=t[1])
 
+    def cinit(self, t):
+        return CInit(value=True if t[0] == 'CInit1' else False, wire=t[1])
+
+    def qmeas(self, t):
+        return QMeas(wire=t[0])
+
+    def qdiscard(self, t):
+        return QDiscard(wire=t[0])
+
+    def cdiscard(self, t):
+        return CDiscard(wire=t[0])
+
     def subroutine_call(self, t):
         repetitions = 1
         if isinstance(t[0], int):
@@ -234,6 +246,31 @@ class QRot(Gate, NamedTuple('QRot', [
 
 class QInit(Gate, NamedTuple("QInit", [
     ("value", bool),
+    ("wire", Wire)
+    ])):
+    pass
+
+
+class CInit(Gate, NamedTuple("CInit", [
+    ("value", bool),
+    ("wire", Wire)
+    ])):
+    pass
+
+
+class QMeas(Gate, NamedTuple("QMeas", [
+    ("wire", Wire)
+    ])):
+    pass
+
+
+class QDiscard(Gate, NamedTuple("QDiscard", [
+    ("wire", Wire)
+    ])):
+    pass
+
+
+class CDiscard(Gate, NamedTuple("CDiscard", [
     ("wire", Wire)
     ])):
     pass
