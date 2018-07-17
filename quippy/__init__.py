@@ -16,9 +16,9 @@
 
 from quippy.parser import quipper_parser as parser
 from quippy.transformer import Wire, Control, TypeAssignment_Type, TypeAssignment, Gate, QGate_Op, \
-    QGate, QRot_Op, QRot, QInit, SubroutineCall, Comment, Circuit, Subroutine_Control, Subroutine, \
-    Start
+    QGate, QRot_Op, QRot, QInit, CInit, QMeas, QDiscard, CDiscard, SubroutineCall, Comment, \
+    Circuit, Subroutine_Control, Subroutine, Start
 
 __all__ = [parser, Wire, Control, TypeAssignment_Type, TypeAssignment, Gate, QGate_Op, QGate,
-           QRot_Op, QRot, QInit, SubroutineCall, Comment, Circuit, Subroutine_Control, Subroutine,
-           Start]
+           QRot_Op, QRot, QInit, CInit, QMeas, QDiscard, CDiscard, SubroutineCall, Comment, Circuit,
+           Subroutine_Control, Subroutine, Start]
