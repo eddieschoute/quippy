@@ -86,6 +86,18 @@ class TestTransformer(TestCase):
         parsed = parser.parse(text)
         self.assertEqual(CInit(value=False, wire=Wire(i=5)), parsed)
 
+    def test_qterm_gate(self):
+        text = '''QTerm0(3) with nocontrol'''
+        parser = self.parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(CInit(value=False, wire=Wire(i=3)), parsed)
+
+    def test_cterm_gate(self):
+        text = '''CTerm1(3) with nocontrol'''
+        parser = self.parser('gate')
+        parsed = parser.parse(text)
+        self.assertEqual(CInit(value=True, wire=Wire(i=3)), parsed)
+
     def test_qmeas_gate(self):
         text = '''QMeas(0)'''
         parser = self.parser('gate')

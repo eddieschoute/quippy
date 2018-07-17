@@ -104,6 +104,12 @@ class QuipperTransformer(Transformer):
     def cinit(self, t):
         return CInit(value=True if t[0] == 'CInit1' else False, wire=t[1])
 
+    def qterm(self, t):
+        return QTerm(value=True if t[0] == 'QTerm1' else False, wire=t[1])
+
+    def cterm(self, t):
+        return CTerm(value=True if t[0] == 'CTerm1' else False, wire=t[1])
+
     def qmeas(self, t):
         return QMeas(wire=t[0])
 
@@ -252,6 +258,20 @@ class QInit(Gate, NamedTuple("QInit", [
 
 
 class CInit(Gate, NamedTuple("CInit", [
+    ("value", bool),
+    ("wire", Wire)
+    ])):
+    pass
+
+
+class QTerm(Gate, NamedTuple("QTerm", [
+    ("value", bool),
+    ("wire", Wire)
+    ])):
+    pass
+
+
+class CTerm(Gate, NamedTuple("CTerm", [
     ("value", bool),
     ("wire", Wire)
     ])):
