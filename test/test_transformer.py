@@ -57,7 +57,7 @@ class TestTransformer(TestCase):
         self.assertEqual(QGate(
             op=QGate_Op.Not,
             inverted=False,
-            wire=Wire(0),
+            wires=[Wire(0)],
             control=Control(controlled=[Wire(2), Wire(-3)], no_control=True)
             ), parsed)
 
@@ -164,7 +164,7 @@ class TestTransformer(TestCase):
                 QGate(
                     op=QGate_Op.H,
                     inverted=True,
-                    wire=Wire(0),
+                    wires=[Wire(0)],
                     control=Control(
                         controlled=[
                             Wire(3),
@@ -206,7 +206,7 @@ class TestTransformer(TestCase):
                     QGate(
                         op=QGate_Op.H,
                         inverted=True,
-                        wire=Wire(0),
+                        wires=[Wire(0)],
                         control=Control(
                             controlled=[
                                 Wire(3),
@@ -227,6 +227,50 @@ class TestTransformer(TestCase):
                 ),
             subroutines=[]
             )
+        self.assertEqual(expected_start, parsed)
+
+    def test_multi(self):
+        text = '''Inputs: 0:Qbit, 1:Qbit, 2:Qbit
+        QGate["multinot"](0,1) with controls=[+2] with nocontrol
+        QGate["swap"](0,1) with controls=[+2]
+        QGate["W"](1,2) with controls=[+0]
+        Outputs: 0:Qbit, 1:Qbit, 2:Qbit
+        '''
+        parser = self.parser()
+        parsed = parser.parse(text)
+        expected_start = Start(
+            circuit=Circuit(
+                inputs=[
+                    TypeAssignment(Wire(0), TypeAssignment_Type.Qbit),
+                    TypeAssignment(Wire(1), TypeAssignment_Type.Qbit),
+                    TypeAssignment(Wire(2), TypeAssignment_Type.Qbit)],
+                gates=[
+                    QGate(
+                        op=QGate_Op.MultiNot,
+                        inverted=False,
+                        wires=[Wire(0), Wire(1)],
+                        control=Control(
+                            controlled=[Wire(2)],
+                            no_control=True)),
+                    QGate(
+                        op=QGate_Op.Swap,
+                        inverted=False,
+                        wires=[Wire(0), Wire(1)],
+                        control=Control(
+                            controlled=[Wire(2)],
+                            no_control=False)),
+                    QGate(
+                        op=QGate_Op.W,
+                        inverted=False,
+                        wires=[Wire(1), Wire(2)],
+                        control=Control(
+                            controlled=[Wire(0)],
+                            no_control=False))],
+                outputs=[
+                    TypeAssignment(Wire(0), TypeAssignment_Type.Qbit),
+                    TypeAssignment(Wire(1), TypeAssignment_Type.Qbit),
+                    TypeAssignment(Wire(2), TypeAssignment_Type.Qbit)]),
+            subroutines=[])
         self.assertEqual(expected_start, parsed)
 
     def test_optimizer_pf6_30_before(self):

@@ -78,7 +78,7 @@ class TestParser(TestCase):
         self.assertEqual(Tree('qgate', [
             Tree('string', ['"not"']),
             Tree('inversion', []),
-            Tree('wire', [Tree('int', ["0"])]),
+            Tree('wire_list', [Tree('wire', [Tree('int', ['0'])])]),
             Tree('control_app', [
                 Tree('wire_list', [
                     Tree('wire', [Tree('int', ["+2"])]),
@@ -194,7 +194,7 @@ class TestParser(TestCase):
             Tree('qgate', [
                 Tree('string', ['"H"']),
                 Tree('inversion', ['*']),
-                Tree('wire', [Tree('int', ['0'])]),
+                Tree('wire_list', [Tree('wire', [Tree('int', ['0'])])]),
                 Tree('control_app', [
                     Tree('wire_list', [
                         Tree('wire', [Tree('int', ['+3'])]),
@@ -224,6 +224,82 @@ class TestParser(TestCase):
             'yes',
             circuit_tree
             ]), parsed)
+
+    def test_multi(self):
+        text = '''Inputs: 0:Qbit, 1:Qbit, 2:Qbit
+        QGate["multinot"](0,1) with controls=[+2] with nocontrol
+        QGate["swap"](0,1) with controls=[+2]
+        QGate["W"](1,2) with controls=[+0]
+        Outputs: 0:Qbit, 1:Qbit, 2:Qbit
+        '''
+        parser = self.parser()
+        parsed = parser.parse(text)
+        self.assertEqual(Tree('start', [
+            Tree('circuit', [
+                Tree('arity', [
+                    Tree('type_assignment', [
+                        Tree('wire', [
+                            Tree('int', ['0'])]),
+                        'Qbit']),
+                    Tree('type_assignment', [
+                        Tree('wire', [
+                            Tree('int', ['1'])]),
+                        'Qbit']),
+                    Tree('type_assignment', [
+                        Tree('wire', [
+                            Tree('int', ['2'])]),
+                        'Qbit'])]),
+                Tree('qgate', [
+                    Tree('string', ['"multinot"']),
+                    Tree('inversion', []),
+                    Tree('wire_list', [
+                        Tree('wire', [
+                            Tree('int', ['0'])]),
+                        Tree('wire', [
+                            Tree('int', ['1'])])]),
+                    Tree('control_app', [
+                        Tree('wire_list', [
+                            Tree('wire', [
+                                Tree('int', ['+2'])])]),
+                        'with nocontrol'])]),
+                Tree('qgate', [
+                    Tree('string', ['"swap"']),
+                    Tree('inversion', []),
+                    Tree('wire_list', [
+                        Tree('wire', [
+                            Tree('int', ['0'])]),
+                        Tree('wire', [
+                            Tree('int', ['1'])])]),
+                    Tree('control_app', [
+                        Tree('wire_list', [
+                            Tree('wire', [
+                                Tree('int', ['+2'])])])])]),
+                Tree('qgate', [
+                    Tree('string', ['"W"']),
+                    Tree('inversion', []),
+                    Tree('wire_list', [
+                        Tree('wire', [
+                            Tree('int', ['1'])]),
+                        Tree('wire', [
+                            Tree('int', ['2'])])]),
+                    Tree('control_app', [
+                        Tree('wire_list', [
+                            Tree('wire', [
+                                Tree('int', ['+0'])])])])]),
+                Tree('arity', [
+                    Tree('type_assignment', [
+                        Tree('wire', [
+                            Tree('int', ['0'])]),
+                        'Qbit']),
+                    Tree('type_assignment', [
+                        Tree('wire', [
+                            Tree('int', ['1'])]),
+                        'Qbit']),
+                    Tree('type_assignment', [
+                        Tree('wire', [
+                            Tree('int', ['2'])]),
+                        'Qbit'])])])]),
+        parsed)
 
     @unittest.skip
     def test_optimizer(self):

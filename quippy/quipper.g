@@ -58,7 +58,7 @@ NO_CONTROL : "with nocontrol"
 // Gate definitions
 // Note: ] and ( have to be separate tokens for the lexer.
 !inversion  : "*"? // Make sure the token does not get lost.
-qgate       : "QGate[" string "]" inversion "(" wire ")" control_app
+qgate       : "QGate[" string "]" inversion "(" wire_list ")" control_app
 qrot        : "QRot[" string "," float "]" inversion "(" wire ")"
 gphase      : "Gphase() with t=" float control_app "with anchors=[" wire_list "]"
 cnot        : "CNot(" wire ")" control_app

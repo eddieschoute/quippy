@@ -75,10 +75,12 @@ class QuipperTransformer(Transformer):
             op = ops.Omega
         elif n == "iX":
             op = ops.IX
+        elif n == "W":
+            op = ops.W
         else:
             raise RuntimeError("Unknown QGate operation: {}".format(n))
 
-        return QGate(op=op, inverted=len(t[1].children) > 0, wire=t[2], control=t[3])
+        return QGate(op=op, inverted=len(t[1].children) > 0, wires=t[2], control=t[3])
 
     def qrot(self, t):
         ops = QRot_Op
@@ -225,7 +227,7 @@ class QGate_Op(Enum):
 class QGate(Gate, NamedTuple('QGate', [
     ('op', QGate_Op),
     ('inverted', bool),
-    ('wire', Wire),
+    ('wires', List[Wire]),
     ('control', Control)
     ])):
     pass
