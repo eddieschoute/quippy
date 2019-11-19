@@ -1,3 +1,3 @@
 [submodule "resources/optimizer"]
 	path = resources/optimizer
-	url = git@github.com:njross/optimizer.git
+	url = https://github.com/njross/optimizer.git
