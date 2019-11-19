@@ -18,8 +18,7 @@ from pathlib import Path
 import unittest
 from unittest import TestCase
 
-from lark import Tree
-from lark.common import UnexpectedToken
+from lark import Tree, UnexpectedToken
 
 from quippy.parser import quipper_parser
 
