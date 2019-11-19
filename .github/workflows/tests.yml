@@ -1,0 +1,19 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - uses: actions/setup-python@v1
+    - uses: dschep/install-pipenv-action@v1
+    - name: Install dependencies
+      run: pipenv install --python 3 --deploy --ignore-pipfile
+    - name: Run tests
+      run: pipenv run python -m unittest discover test
