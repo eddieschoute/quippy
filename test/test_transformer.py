@@ -316,7 +316,7 @@ class TestTransformer(TestCase):
                     e = sys.exc_info()[0]
                     raise RuntimeError("Failed to parse {}. Error: {}".format(path, e.message))
 
-    @unittest.skip("Long test")
+    @unittest.skip("Malformed files")
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path(__file__).parents[1] / "resources" / "simcount"

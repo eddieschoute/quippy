@@ -318,7 +318,7 @@ class TestParser(TestCase):
                 except UnexpectedToken as e:
                     raise RuntimeError("Failed to parse {}. Error: {}".format(path, e.message))
 
-    @unittest.skip
+    @unittest.skip("Malformed files")
     def test_simcount(self):
         """Try to parse all files in the simcount resource folder."""
         simcount_files_path = Path("resources") / "simcount"
