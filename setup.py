@@ -99,6 +99,8 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         ],
 
     # This field adds keywords for your project which will appear on the
@@ -128,7 +130,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'lark-parser>=0.5.5,<0.6'
+        'lark-parser>=0.7.8,<0.8'
         ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
